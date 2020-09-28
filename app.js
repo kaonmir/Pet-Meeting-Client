@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
-const mysql = require("mysql");
+const mysql = require("./api/mysql");
 
 const user = require("./routes/user");
 
@@ -12,8 +12,7 @@ const { PORT, MySQLOption } = require("./config.json");
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // Connection to MySQL
-const connection = mysql.createConnection(MySQLOption);
-connection.connect();
+mysql.createConnection(MySQLOption);
 
 // Allowing CORS for developing
 app.all("/*", function (req, res, next) {
