@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
+const cors = require("cors");
 const mysql = require("./api/mysql");
 
 const user = require("./routes/user");
@@ -15,11 +16,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 mysql.createConnection(MySQLOption);
 
 // Allowing CORS for developing
-app.all("/*", function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "X-Requested-With");
-  next();
-});
+app.use(cors());
 
 /* --------------- Routing --------------- */
 
