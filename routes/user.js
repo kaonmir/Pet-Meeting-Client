@@ -3,20 +3,21 @@
 const express = require("express");
 const router = express.Router();
 
-const { login, signup } = require("../api/mysql");
+const { login, signup } = require("../api/user");
 const Schema = require("../model/user");
 const Response = require("../response");
 
 router.get("/id", (req, res) => {
-  const { uid } = req.session;
-  if (uid) res.json(Response.success({ id: uid }));
+  const sess = req.session;
+
+  if (sess.uid) res.json(Response.success({ id: sess.uid }));
   else res.status(400).json(Response.fail("Not logined"));
 });
 
 router.get("/logined", (req, res) => {
   const { uid } = req.session;
   if (uid) res.json(Response.success({ id: uid }));
-  else res.status(400).json(Response.fail("Not logined"));
+  else res.json(Response.fail("Not logined"));
 });
 
 router.post("/login", (req, res) => {
@@ -30,6 +31,7 @@ router.post("/login", (req, res) => {
       .then((id) => {
         req.session.uid = id; // Set session's id
         res.json(Response.success({ id: id }));
+        console.log(req.session);
       })
       .catch((err) => res.status(400).json(Response.fail(err)));
   }
