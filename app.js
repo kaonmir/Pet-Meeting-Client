@@ -6,6 +6,8 @@ const session = require("express-session");
 const mysql = require("./api/mysql");
 
 const user = require("./routes/user");
+const profile = require("./routes/profile");
+const worries = require("./routes/worries");
 
 const { PORT, MySQLOption } = require("./config.json");
 
@@ -29,6 +31,8 @@ app.use(cors()); // Allowing CORS for developing
 /* --------------- Routing --------------- */
 
 app.use("/user", user);
+app.use("/profile", profile);
+app.use("/worries", worries);
 
 // -------------- Listening -------------- */
 
