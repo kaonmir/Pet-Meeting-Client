@@ -1,20 +1,20 @@
 const Connection = require("./mysql");
 
 function profile_user(id) {
-  return new Promise((reslove, reject) => {
+  return new Promise((resolve, reject) => {
     const sql = `SELECT Username, ImgUrl FROM User WHERE UID="${id}"`;
     Connection.get().query(sql, (err, rows) => {
       if (err) reject(err);
-      else reslove(rows[0]); // 하나의 유저만 요청하는 거니까 rows[0]
+      else resolve(rows[0]); // 하나의 유저만 요청하는 거니까 rows[0]
     });
   });
 }
 function profile_pets(id) {
-  return new Promise((reslove, reject) => {
+  return new Promise((resolve, reject) => {
     const sql = `SELECT Name, Year, Gender, ImgUrl FROM Pet WHERE UID="${id}"`;
     Connection.get().query(sql, (err, rows) => {
       if (err) reject(err);
-      else reslove(rows || []);
+      else resolve(rows || []);
     });
   });
 }
