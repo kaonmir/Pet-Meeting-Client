@@ -15,6 +15,7 @@ router.get("/list", (req, res) => {
     .catch((err) => res.json(response.fail("Database Error")));
 });
 
+// 매번 실행말고 저장해 놓고 보내는 방법 생각
 router.get("/best", (req, res) => {
   showoff
     .best()
@@ -66,6 +67,7 @@ router.delete("/:sid", (req, res) => {
   } else res.json(response.fail("SID is wrong"));
 });
 
+/* --------------------- Vote ---------------------*/
 router.post("/vote/:sid", (req, res) => {
   const sid = Number(req.params.sid);
 

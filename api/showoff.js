@@ -22,9 +22,7 @@ module.exports = {
     }),
   list: (limit, offset) =>
     new Promise((resolve, reject) => {
-      // Later, 저거 명령문 해킹 방지하기
-
-      const sql = `SELECT s.SID, s.ImgUrl, s.Text, s.Date, u.Username, COUNT(v.SID) AS Votes
+      const sql = `SELECT s.SID, s.ImgUrl, s.Text, s.Date, u.Username, COUNT(v.SID) AS Votes, u.UID
                     FROM petmeeting.Showoff AS s 
                     JOIN petmeeting.User AS u ON s.UID = u.UID
                     LEFT JOIN petmeeting.Vote AS v ON s.SID = v.SID
@@ -54,6 +52,7 @@ module.exports = {
       });
     }),
 
+  // Username을 같이 줘야 할까
   get: (sid) =>
     new Promise((resolve, reject) => {
       const sql = `SELECT * FROM petmeeting.Showoff WHERE SID='${sid}'`;
@@ -74,6 +73,7 @@ module.exports = {
       });
     }),
 
+  /* --------------------- Vote ---------------------*/
   //TODO
   vote: (sid, uid) =>
     new Promise((resolve, reject) => {
@@ -90,7 +90,7 @@ module.exports = {
 
       Connection.get().query(sql, (err, rows) => {
         if (err) reject(err);
-        else resolve(rows.length == 1);
+        else resolve(rows);
       });
     }),
 
