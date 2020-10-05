@@ -24,10 +24,11 @@ module.exports = {
     new Promise((resolve, reject) => {
       // Later, 저거 명령문 해킹 방지하기
 
-      const sql = `SELECT s.SID, s.ImgUrl, s.Text, s.Date, u.Username
+      const sql = `SELECT s.SID, s.ImgUrl, s.Text, s.Date, u.Username, COUNT(v.SID) AS Votes
                     FROM petmeeting.Showoff AS s 
                     JOIN petmeeting.User AS u ON s.UID = u.UID
-                    ORDER BY s.Date DESC LIMIT ${limit} OFFSET ${offset}`;
+                    LEFT JOIN petmeeting.Vote AS v ON s.SID = v.SID
+                    GROUP BY s.SID ORDER BY s.Date DESC LIMIT ${limit} OFFSET ${offset}`;
       Connection.get().query(sql, (err, rows) => {
         if (err) reject(err);
         else resolve(rows);
@@ -70,6 +71,36 @@ module.exports = {
         // rows가 어떻게 되어있는지 궁금
         if (err) reject(err);
         else resolve(rows);
+      });
+    }),
+
+  //TODO
+  vote: (sid, uid) =>
+    new Promise((resolve, reject) => {
+      const sql = `INSERT INTO petmeeting.Vote SET UID='${uid}', SID='${sid}'`;
+
+      Connection.get().query(sql, (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    }),
+  unvote: (sid, uid) =>
+    new Promise((resolve, reject) => {
+      const sql = `DELETE FROM petmeeting.Vote WHERE UID='${uid}' AND SID='${sid}'`;
+
+      Connection.get().query(sql, (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows.length == 1);
+      });
+    }),
+
+  voted: (sid, uid) =>
+    new Promise((resolve, reject) => {
+      const sql = `SELECT * FROM petmeeting.Vote WHERE UID='${uid}' AND SID='${sid}'`;
+
+      Connection.get().query(sql, (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows.length == 1);
       });
     }),
 };
