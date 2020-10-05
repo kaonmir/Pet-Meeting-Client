@@ -9,6 +9,7 @@ const user = require("./routes/user");
 const profile = require("./routes/profile");
 const worry = require("./routes/worry");
 const showoff = require("./routes/showoff");
+const sample = require("./routes/sample");
 
 const { PORT, MySQLOption } = require("./config.json");
 
@@ -35,6 +36,8 @@ app.use("/user", user);
 app.use("/profile", profile);
 app.use("/worry", worry);
 app.use("/showoff", showoff);
+
+app.use("/sample", sample); // For Test
 
 // -------------- Listening -------------- */
 

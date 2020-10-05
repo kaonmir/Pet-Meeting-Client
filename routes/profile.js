@@ -5,10 +5,10 @@ const router = express.Router();
 
 const { profile, profile_user } = require("../api/profile");
 const Response = require("../response");
+const session = require("../services/session");
 
 router.get("/", (req, res) => {
-  const id = "1";
-  // const id = req.session.uid;
+  const id = session.getUID(req);
 
   if (id == undefined) res.json(Response.fail("Login first!!"));
   else {
