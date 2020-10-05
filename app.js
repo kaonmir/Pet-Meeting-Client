@@ -1,30 +1,40 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
-const mysql = require("mysql");
+const cors = require("cors");
+const session = require("express-session");
+const mysql = require("./api/mysql");
 
 const user = require("./routes/user");
+const profile = require("./routes/profile");
+const worry = require("./routes/worry");
+const showoff = require("./routes/showoff");
 
 const { PORT, MySQLOption } = require("./config.json");
 
 /* -------------- Predefined -------------- */
 
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
-// Connection to MySQL
-const connection = mysql.createConnection(MySQLOption);
-connection.connect();
+// Configuring session
+app.use(
+  session({
+    secret: "WhateverIwant",
+    resave: false,
+    saveUninitialized: true,
+  })
+);
 
-// Allowing CORS for developing
-app.all("/*", function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "X-Requested-With");
-  next();
-});
+mysql.createConnection(MySQLOption); // Connection to MySQL
+app.use(cors()); // Allowing CORS for developing
 
 /* --------------- Routing --------------- */
 
 app.use("/user", user);
+app.use("/profile", profile);
+app.use("/worry", worry);
+app.use("/showoff", showoff);
 
 // -------------- Listening -------------- */
 
