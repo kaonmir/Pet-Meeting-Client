@@ -33,4 +33,34 @@ module.exports = {
         else resolve(rows);
       });
     }),
+
+  //TODO 먼저 Image를 어떻게 저장하고 배포할 건지 결정한 다음에야 구현 가능
+  write: () =>
+    new Promise((resolve, reject) => {
+      const sql = ``;
+      Connection.get().query(sql, option, (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    }),
+
+  get: (sid) =>
+    new Promise((resolve, reject) => {
+      const sql = `SELECT * FROM petmeeting.Showoff WHERE SID='${sid}'`;
+      Connection.get().query(sql, (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows[0]);
+      });
+    }),
+
+  delete: (sid) =>
+    new Promise((resolve, reject) => {
+      const sql = `DELETE FROM petmeeting.Showoff WHERE SID='${sid}'`;
+
+      Connection.get().query(sql, (err, rows) => {
+        // rows가 어떻게 되어있는지 궁금
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    }),
 };
