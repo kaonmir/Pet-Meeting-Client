@@ -25,6 +25,21 @@ module.exports = {
         else resolve(rows);
       });
     }),
+  update: (wid, title, text) =>
+    new Promise((resolve, reject) => {
+      const option = {
+        Title: title,
+        Text: text,
+      };
+
+      const sql = `UPDATE petmeeting.Worry SET ? WHERE WID='${wid}'`;
+      Connection.get().query(sql, option, (err, rows) => {
+        console.log(rows);
+        // 뭐가 튀어나올지 궁금하군.
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    }),
   get: (wid) =>
     new Promise((resolve, reject) => {
       const sql = `SELECT * FROM petmeeting.Worry WHERE WID='${wid}'`;

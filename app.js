@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
+const methodOverride = require("method-override");
 const cors = require("cors");
 const session = require("express-session");
 const mysql = require("./api/mysql");
@@ -29,6 +30,7 @@ app.use(
 
 mysql.createConnection(MySQLOption); // Connection to MySQL
 app.use(cors()); // Allowing CORS for developing
+app.use(methodOverride()); // For client doesn't support PUT and DELETE
 
 /* --------------- Routing --------------- */
 

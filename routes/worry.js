@@ -43,6 +43,29 @@ router.post("/", (req, res) => {
       .catch((err) => res.json(response.fail("Database Error")));
 });
 
+router.put("/:wid", (req, res) => {
+  const wid = Number(req.params.wid);
+  const { title, text } = req.body;
+  const uid = session.getUID(req);
+
+  if (title == undefined || text == undefined)
+    res.json(response.fail("Fill the blank completely"));
+  else if (uid == undefined || uid < 0) res.json(response.fail("Login Please"));
+  else if (isNaN(wid) || wid <= 0) res.json(response.fail("WID is wrong"));
+  else
+    worry
+      .get(wid)
+      .then((result) => {
+        if (result.UID != uid) res.json(response.fail("Authorizaion Error"));
+        else
+          worry
+            .update(wid, title, text)
+            .then((result) => res.json(response.success()))
+            .catch((err) => res.json(response.fail("Database Error")));
+      })
+      .catch((err) => res.json(response.fail("Database Error")));
+});
+
 router.delete("/:wid", (req, res) => {
   const wid = Number(req.params.wid);
 

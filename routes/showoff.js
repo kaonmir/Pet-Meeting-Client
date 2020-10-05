@@ -36,6 +36,9 @@ router.get("/:sid", (req, res) => {
 router.post("/", (req, res) => {
   res.json(response.fail("Not implemented yet"));
 });
+router.put("/:sid", (req, res) => {
+  res.json(response.fail("Not implemented yet"));
+});
 
 router.delete("/:sid", (req, res) => {
   const sid = Number(req.params.sid);

@@ -43,6 +43,15 @@ module.exports = {
         else resolve(rows);
       });
     }),
+  // TODO update도 마찬가지.
+  update: () =>
+    new Promise((resolve, reject) => {
+      const sql = ``;
+      Connection.get().query(sql, option, (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    }),
 
   get: (sid) =>
     new Promise((resolve, reject) => {
