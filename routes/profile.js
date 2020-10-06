@@ -10,15 +10,12 @@ const session = require("../services/session");
 router.get("/", (req, res) => {
   const id = session.getUID(req);
 
-  if (id == undefined) res.json(Response.fail("Login first!!"));
-  else {
-    profile(id)
-      .then((result) => {
-        console.log(result);
-        res.json(Response.success(result));
-      })
-      .catch((err) => console.log(err));
-  }
+  profile(id)
+    .then((result) => {
+      console.log(result);
+      res.json(Response.success(result));
+    })
+    .catch((err) => console.log(err));
 });
 
 module.exports = router;

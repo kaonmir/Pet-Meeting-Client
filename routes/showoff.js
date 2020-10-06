@@ -48,22 +48,18 @@ router.delete("/:sid", (req, res) => {
   if (!isNaN(sid) && sid > 0) {
     const uid = session.getUID(req);
 
-    // Check whether uid is valid or not
-    if (uid == undefined || uid < 0) res.json(response.fail("Login Please"));
-    else {
-      showoff
-        .get(sid)
-        .then((result) => {
-          // Check whether uid is valid or not
-          if (result.UID != uid) res.json(response.fail("Authorizaion Error"));
-          else
-            showoff
-              .delete(sid)
-              .then(() => res.json(response.success()))
-              .catch((err) => res.json(response.fail("Database Error")));
-        })
-        .catch((err) => res.json(response.fail("Database Error")));
-    }
+    showoff
+      .get(sid)
+      .then((result) => {
+        // Check whether uid is valid or not
+        if (result.UID != uid) res.json(response.fail("Authorizaion Error"));
+        else
+          showoff
+            .delete(sid)
+            .then(() => res.json(response.success()))
+            .catch((err) => res.json(response.fail("Database Error")));
+      })
+      .catch((err) => res.json(response.fail("Database Error")));
   } else res.json(response.fail("SID is wrong"));
 });
 
@@ -73,24 +69,21 @@ router.post("/vote/:sid", (req, res) => {
 
   if (!isNaN(sid) && sid > 0) {
     const uid = session.getUID(req);
-    if (uid == undefined || uid < 0) res.json(response.fail("Login Please"));
-    else {
-      showoff
-        .voted(sid, uid)
-        .then((result) => {
-          if (result)
-            showoff
-              .unvote(sid, uid)
-              .then((result) => res.json(response.success({ voted: false })))
-              .catch((err) => res.json(response.fail("Database Error")));
-          else
-            showoff
-              .vote(sid, uid)
-              .then((result) => res.json(response.success({ voted: true })))
-              .catch((err) => res.json(response.fail("Database Error")));
-        })
-        .catch((err) => res.json(response.fail("Database Error")));
-    }
+    showoff
+      .voted(sid, uid)
+      .then((result) => {
+        if (result)
+          showoff
+            .unvote(sid, uid)
+            .then((result) => res.json(response.success({ voted: false })))
+            .catch((err) => res.json(response.fail("Database Error")));
+        else
+          showoff
+            .vote(sid, uid)
+            .then((result) => res.json(response.success({ voted: true })))
+            .catch((err) => res.json(response.fail("Database Error")));
+      })
+      .catch((err) => res.json(response.fail("Database Error")));
   } else res.json(response.fail("SID is wrong"));
 });
 
@@ -99,16 +92,13 @@ router.get("/vote/:sid", (req, res) => {
 
   if (!isNaN(sid) && sid > 0) {
     const uid = session.getUID(req);
-    if (uid == undefined || uid < 0) res.json(response.fail("Login Please"));
-    else {
-      showoff
-        .voted(sid, uid)
-        .then((result) => {
-          if (result) res.json(response.success({ voted: true }));
-          else res.json(response.success({ voted: false }));
-        })
-        .catch((err) => res.json(response.fail("Database Error")));
-    }
+    showoff
+      .voted(sid, uid)
+      .then((result) => {
+        if (result) res.json(response.success({ voted: true }));
+        else res.json(response.success({ voted: false }));
+      })
+      .catch((err) => res.json(response.fail("Database Error")));
   } else res.json(response.fail("SID is wrong"));
 });
 

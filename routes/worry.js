@@ -40,7 +40,6 @@ router.post("/", (req, res) => {
 
   if (title == undefined || text == undefined)
     res.json(response.fail("Fill the blank completely"));
-  else if (uid == undefined || uid < 0) res.json(response.fail("Login Please"));
   else
     worry
       .write(title, text, date, uid)
@@ -55,7 +54,6 @@ router.put("/:wid", (req, res) => {
 
   if (title == undefined || text == undefined)
     res.json(response.fail("Fill the blank completely"));
-  else if (uid == undefined || uid < 0) res.json(response.fail("Login Please"));
   else if (isNaN(wid) || wid <= 0) res.json(response.fail("WID is wrong"));
   else
     worry
@@ -78,22 +76,18 @@ router.delete("/:wid", (req, res) => {
   if (!isNaN(wid) && wid > 0) {
     const uid = session.getUID(req);
 
-    // Check whether uid is valid or not
-    if (uid == undefined || uid < 0) res.json(response.fail("Login Please"));
-    else {
-      worry
-        .get(wid)
-        .then((result) => {
-          // Check whether uid is valid or not
-          if (result.UID != uid) res.json(response.fail("Authorizaion Error"));
-          else
-            worry
-              .delete(wid)
-              .then(() => res.json(response.success()))
-              .catch((err) => res.json(response.fail("Database Error")));
-        })
-        .catch((err) => res.json(response.fail("Database Error")));
-    }
+    worry
+      .get(wid)
+      .then((result) => {
+        // Check whether uid is valid or not
+        if (result.UID != uid) res.json(response.fail("Authorizaion Error"));
+        else
+          worry
+            .delete(wid)
+            .then(() => res.json(response.success()))
+            .catch((err) => res.json(response.fail("Database Error")));
+      })
+      .catch((err) => res.json(response.fail("Database Error")));
   } else res.json(response.fail("WID is wrong"));
 });
 
@@ -103,28 +97,21 @@ router.post("/bookmark/:wid", (req, res) => {
 
   if (!isNaN(wid) && wid > 0) {
     const uid = session.getUID(req);
-    if (uid == undefined || uid < 0) res.json(response.fail("Login Please"));
-    else {
-      worry
-        .bookmarked(wid, uid)
-        .then((result) => {
-          if (result)
-            worry
-              .unbookmark(wid, uid)
-              .then((result) =>
-                res.json(response.success({ bookmarked: false }))
-              )
-              .catch((err) => res.json(response.fail("Database Error")));
-          else
-            worry
-              .bookmark(wid, uid)
-              .then((result) =>
-                res.json(response.success({ bookmarked: true }))
-              )
-              .catch((err) => res.json(response.fail("Database Error")));
-        })
-        .catch((err) => res.json(response.fail("Database Error")));
-    }
+    worry
+      .bookmarked(wid, uid)
+      .then((result) => {
+        if (result)
+          worry
+            .unbookmark(wid, uid)
+            .then((result) => res.json(response.success({ bookmarked: false })))
+            .catch((err) => res.json(response.fail("Database Error")));
+        else
+          worry
+            .bookmark(wid, uid)
+            .then((result) => res.json(response.success({ bookmarked: true })))
+            .catch((err) => res.json(response.fail("Database Error")));
+      })
+      .catch((err) => res.json(response.fail("Database Error")));
   } else res.json(response.fail("WID is wrong"));
 });
 
@@ -133,16 +120,13 @@ router.get("/bookmark/:wid", (req, res) => {
 
   if (!isNaN(wid) && wid > 0) {
     const uid = session.getUID(req);
-    if (uid == undefined || uid < 0) res.json(response.fail("Login Please"));
-    else {
-      worry
-        .bookmarked(wid, uid)
-        .then((result) => {
-          if (result) res.json(response.success({ bookmarked: true }));
-          else res.json(response.success({ bookmarked: false }));
-        })
-        .catch((err) => res.json(response.fail("Database Error")));
-    }
+    worry
+      .bookmarked(wid, uid)
+      .then((result) => {
+        if (result) res.json(response.success({ bookmarked: true }));
+        else res.json(response.success({ bookmarked: false }));
+      })
+      .catch((err) => res.json(response.fail("Database Error")));
   } else res.json(response.fail("WID is wrong"));
 });
 

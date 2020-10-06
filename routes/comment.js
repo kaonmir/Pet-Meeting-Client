@@ -45,7 +45,6 @@ router.post("/", (req, res) => {
 
   if (text == undefined || isNan(wid) || wid < 0)
     res.json(response.fail("Fill the blank completely"));
-  else if (uid == undefined || uid < 0) res.json(response.fail("Login Please"));
   else
     comment
       .comment(text, date, wid, uid)
@@ -60,7 +59,6 @@ router.post("/re", (req, res) => {
 
   if (text == undefined || isNaN(cid) || cid < 0)
     res.json(response.fail("Fill the blank completely"));
-  else if (uid == undefined || uid < 0) res.json(response.fail("Login Please"));
   else
     comment
       .get(cid)
@@ -83,7 +81,6 @@ router.put("/:cid", (req, res) => {
   const uid = session.getUID(req);
 
   if (text == undefined) res.json(response.fail("Fill the blank completely"));
-  else if (uid == undefined || uid < 0) res.json(response.fail("Login Please"));
   else if (isNaN(cid) || cid < 0) res.json(response.fail("WID is wrong"));
   else
     comment
@@ -106,22 +103,18 @@ router.delete("/:cid", (req, res) => {
   if (!isNaN(cid) && cid > 0) {
     const uid = session.getUID(req);
 
-    // Check whether uid is valid or not
-    if (uid == undefined || uid < 0) res.json(response.fail("Login Please"));
-    else {
-      comment
-        .get(cid)
-        .then((result) => {
-          // Check whether uid is valid or not
-          if (result.UID != uid) res.json(response.fail("Authorizaion Error"));
-          else
-            comment
-              .delete(cid)
-              .then(() => res.json(response.success()))
-              .catch((err) => res.json(response.fail("Database Error")));
-        })
-        .catch((err) => res.json(response.fail("Database Error")));
-    }
+    comment
+      .get(cid)
+      .then((result) => {
+        // Check whether uid is valid or not
+        if (result.UID != uid) res.json(response.fail("Authorizaion Error"));
+        else
+          comment
+            .delete(cid)
+            .then(() => res.json(response.success()))
+            .catch((err) => res.json(response.fail("Database Error")));
+      })
+      .catch((err) => res.json(response.fail("Database Error")));
   } else res.json(response.fail("CID is wrong"));
 });
 module.exports = router;

@@ -5,4 +5,9 @@ module.exports = {
     return 1;
     // return req.session.uid;
   },
+  SessionOption: session({
+    secret: "WhateverIwant",
+    resave: false,
+    saveUninitialized: true,
+  }),
 };
