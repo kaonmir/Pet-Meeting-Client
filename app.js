@@ -20,7 +20,7 @@ const response = require("./response");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-mysql.createConnection(MySQLOption); // Connection to MySQL
+mysql.createConnection(MySQLOption); // MySQL to MySQL
 app.use(session.SessionOption); // Configuring session
 app.use(cors()); // Allowing CORS for developing
 app.use(methodOverride()); // For client doesn't support PUT and DELETE

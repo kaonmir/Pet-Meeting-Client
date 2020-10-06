@@ -1,4 +1,4 @@
-const Connection = require("./mysql");
+const MySQL = require("./mysql");
 
 module.exports = {
   best: () =>
@@ -15,7 +15,7 @@ module.exports = {
                     JOIN petmeeting.User AS u ON s.UID = u.UID
                     WHERE s.Date > str_to_date('${date}', '%Y-%m-%d')
                     GROUP BY s.SID ORDER BY Votes DESC LIMIT 1`;
-      Connection.get().query(sql, (err, rows) => {
+      MySQL.get().query(sql, (err, rows) => {
         if (err) reject(err);
         else resolve(rows[0]);
       });
@@ -27,7 +27,7 @@ module.exports = {
                     JOIN petmeeting.User AS u ON s.UID = u.UID
                     LEFT JOIN petmeeting.Vote AS v ON s.SID = v.SID
                     GROUP BY s.SID ORDER BY s.Date DESC LIMIT ${limit} OFFSET ${offset}`;
-      Connection.get().query(sql, (err, rows) => {
+      MySQL.get().query(sql, (err, rows) => {
         if (err) reject(err);
         else resolve(rows);
       });
@@ -37,7 +37,7 @@ module.exports = {
   write: () =>
     new Promise((resolve, reject) => {
       const sql = ``;
-      Connection.get().query(sql, option, (err, rows) => {
+      MySQL.get().query(sql, option, (err, rows) => {
         if (err) reject(err);
         else resolve(rows);
       });
@@ -46,7 +46,7 @@ module.exports = {
   update: () =>
     new Promise((resolve, reject) => {
       const sql = ``;
-      Connection.get().query(sql, option, (err, rows) => {
+      MySQL.get().query(sql, option, (err, rows) => {
         if (err) reject(err);
         else resolve(rows);
       });
@@ -56,7 +56,7 @@ module.exports = {
   get: (sid) =>
     new Promise((resolve, reject) => {
       const sql = `SELECT * FROM petmeeting.Showoff WHERE SID='${sid}'`;
-      Connection.get().query(sql, (err, rows) => {
+      MySQL.get().query(sql, (err, rows) => {
         if (err) reject(err);
         else resolve(rows[0]);
       });
@@ -66,7 +66,7 @@ module.exports = {
     new Promise((resolve, reject) => {
       const sql = `DELETE FROM petmeeting.Showoff WHERE SID='${sid}'`;
 
-      Connection.get().query(sql, (err, rows) => {
+      MySQL.get().query(sql, (err, rows) => {
         // rows가 어떻게 되어있는지 궁금
         if (err) reject(err);
         else resolve(rows);
@@ -79,7 +79,7 @@ module.exports = {
     new Promise((resolve, reject) => {
       const sql = `INSERT INTO petmeeting.Vote SET UID='${uid}', SID='${sid}'`;
 
-      Connection.get().query(sql, (err, rows) => {
+      MySQL.get().query(sql, (err, rows) => {
         if (err) reject(err);
         else resolve(rows);
       });
@@ -88,7 +88,7 @@ module.exports = {
     new Promise((resolve, reject) => {
       const sql = `DELETE FROM petmeeting.Vote WHERE UID='${uid}' AND SID='${sid}'`;
 
-      Connection.get().query(sql, (err, rows) => {
+      MySQL.get().query(sql, (err, rows) => {
         if (err) reject(err);
         else resolve(rows);
       });
@@ -98,7 +98,7 @@ module.exports = {
     new Promise((resolve, reject) => {
       const sql = `SELECT * FROM petmeeting.Vote WHERE UID='${uid}' AND SID='${sid}'`;
 
-      Connection.get().query(sql, (err, rows) => {
+      MySQL.get().query(sql, (err, rows) => {
         if (err) reject(err);
         else resolve(rows.length == 1);
       });

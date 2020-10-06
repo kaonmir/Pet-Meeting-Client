@@ -1,19 +1,19 @@
 const mysql = require("mysql");
 
-class Connection {
+class MySQL {
   static connection;
 
   static set(conn) {
-    Connection.connection = conn;
-    Connection.connection.connect();
+    MySQL.connection = conn;
+    MySQL.connection.connect();
     console.log("Connecting Successfully");
   }
   static get() {
-    return Connection.connection;
+    return MySQL.connection;
   }
   static createConnection(MySQLOption) {
-    Connection.set(mysql.createConnection(MySQLOption));
+    MySQL.set(mysql.createConnection(MySQLOption));
   }
 }
 
-module.exports = Connection;
+module.exports = MySQL;
