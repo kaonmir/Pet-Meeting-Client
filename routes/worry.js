@@ -1,9 +1,14 @@
+// {{BASEURL}}/worry
+
 const express = require("express");
 const worry = require("../api/worry");
 const response = require("../response");
 const session = require("../services/session");
 const { formatTime } = require("../services/format");
+const comment = require("./comment");
 const router = express.Router();
+
+router.use("/comment", comment);
 
 router.get("/list", (req, res) => {
   const limit = req.query.limit | 5;
