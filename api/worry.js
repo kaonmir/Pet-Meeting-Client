@@ -58,4 +58,37 @@ module.exports = {
         else resolve(rows);
       });
     }),
+
+  /* --------------------- Bookmark ---------------------*/
+  bookmark: (wid, uid) =>
+    new Promise((resolve, reject) => {
+      const sql = `INSERT INTO petmeeting.BookMarkTo SET UID='${uid}', WID='${wid}'`;
+
+      Connection.get().query(sql, (err, rows) => {
+        console.log(rows);
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    }),
+
+  unbookmark: (wid, uid) =>
+    new Promise((resolve, reject) => {
+      const sql = `DELETE FROM petmeeting.BookMarkTo WHERE UID='${uid}' AND WID='${wid}'`;
+
+      Connection.get().query(sql, (err, rows) => {
+        console.log(rows);
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    }),
+
+  bookmarked: (wid, uid) =>
+    new Promise((resolve, reject) => {
+      const sql = `SELECT * FROM petmeeting.BookMarkTo WHERE UID='${uid}' AND WID='${wid}'`;
+
+      Connection.get().query(sql, (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows.length == 1);
+      });
+    }),
 };
