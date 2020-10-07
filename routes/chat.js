@@ -2,9 +2,8 @@
 const express = require("express");
 const user = require("../api/user");
 const chat = require("../api/chat");
-const response = require("../response");
+const response = require("../services/response");
 const router = express.Router();
-const Response = require("../response");
 const session = require("../services/session");
 const { formatTime } = require("../services/format");
 

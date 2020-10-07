@@ -2,7 +2,7 @@
 
 const express = require("express");
 const worry = require("../api/worry");
-const response = require("../response");
+const response = require("../services/response");
 const session = require("../services/session");
 const { formatTime } = require("../services/format");
 const comment = require("./comment");

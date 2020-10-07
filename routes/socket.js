@@ -6,7 +6,7 @@ const express = require("express");
 const chat = require("../api/chat");
 const Redis = require("../api/redis");
 
-const response = require("../response");
+const response = require("../services/response");
 const { formatTime } = require("../services/format");
 
 var clientSocket = {};

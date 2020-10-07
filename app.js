@@ -23,7 +23,7 @@ const socket = require("./routes/socket");
 
 // Options
 const { PORT, MySQLOption, RedisOption } = require("./config.json");
-const response = require("./response");
+const response = require("./services/response");
 
 /* -------------- Predefined -------------- */
 
