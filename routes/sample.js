@@ -1,17 +1,13 @@
 const express = require("express");
-const worries = require("../api/worry");
-const response = require("../response");
+const Redis = require("../api/redis");
 const router = express.Router();
 
-router.get("/setID", (req, res) => {
-  const id = Math.ceil(Math.random() * 1000);
-  req.session.UID = `${id}`;
-  res.end(`${id}`);
-});
-
-router.get("/getID", (req, res) => {
-  const id = req.session.UID;
-  res.end(id);
+router.get("/get", (req, res) => {
+  Redis.client.get("sadk", (err, reply) => {
+    console.log(reply);
+    if (err) console.log(err);
+    else console.log(reply);
+  });
 });
 
 module.exports = router;

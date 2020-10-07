@@ -6,7 +6,7 @@ class MySQL {
   static set(conn) {
     MySQL.connection = conn;
     MySQL.connection.connect();
-    console.log("Connecting Successfully");
+    console.log("MySQL Connecting Successfully");
   }
   static get() {
     return MySQL.connection;
