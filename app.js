@@ -36,25 +36,30 @@ app.use(session.SessionOption); // Configuring session
 app.use(cors()); // Allowing CORS for developing
 app.use(methodOverride()); // For client doesn't support PUT and DELETE
 
-/* --------------- Routing --------------- */
+/* -------------- Function -------------- */
 
-io.on("connection", socket); // Socket.io for chatting
-
-app.use("/user", user);
-app.use("/sample", sample); // For Test
-
-// Check if logined
-app.all("*", (req, res, next) => {
+var checkLogined = (req, res, next) => {
   const id = session.getUID(req);
   if (id == undefined || id < 0) res.json(response.fail("Login please"));
   else next();
-});
+};
+
+/* --------------- Routing --------------- */
+
+app.use("/", express.static(__dirname + "/build")); // For Frontend
+app.use("/image", express.static(__dirname + "/images")); // For image
+app.use("/user", user);
+app.use("/sample", sample); // For Test
+
+app.all("*", checkLogined); // Check if logined
 
 app.use("/profile", profile);
 app.use("/worry", worry);
 app.use("/showoff", showoff);
 app.use("/chat", chat);
 
-// -------------- Listening -------------- */
+io.on("connection", socket); // Socket.io for chatting
+
+/* -------------- Listening -------------- */
 
 server.listen(PORT, console.log(`Server listening on port ${PORT}`));
