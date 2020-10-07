@@ -18,6 +18,8 @@ function profile_pets(id) {
     });
   });
 }
+
+// Give with chatID!!
 function profile_chats(id) {
   return new Promise((resolve, reject) => {
     const sql = `SELECT UID1, UID2 FROM ChatWith WHERE UID1="${id}" OR UID2="${id}"`;
