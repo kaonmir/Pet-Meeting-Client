@@ -19,4 +19,13 @@ module.exports = {
         else resolve(rows.insertId);
       });
     }),
+  exists: (uid) =>
+    new Promise((resolve, reject) => {
+      const sql = `SELECT * FROM petmeeting.User WHERE UID='${uid}'`;
+      MySQL.get().query(sql, (err, rows) => {
+        if (err) reject(err);
+        else if (rows.length == 1) resolve(true);
+        else resolve(false);
+      });
+    }),
 };
