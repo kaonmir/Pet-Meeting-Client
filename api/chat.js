@@ -10,12 +10,14 @@ function lrange(chatID, property, limit, offset) {
   );
 }
 function rpush(chatID, property, value) {
-  return new Promise((resolve, reject) =>
+  return new Promise((resolve, reject) => {
+    if (value == undefined) reject(`Undefinded value on ${chatID}:${property}`);
     // SET 처럼 같다고 사라지지 않기 때문에 resolve면 true다.
-    Redis.client.RPUSH(`${chatID}:${property}`, value, (err, reply) =>
-      err ? reject(err) : resolve()
-    )
-  );
+    else
+      Redis.client.RPUSH(`${chatID}:${property}`, value, (err, reply) =>
+        err ? reject(err) : resolve()
+      );
+  });
 }
 
 function scan(cursor, pattern) {

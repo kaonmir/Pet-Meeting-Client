@@ -30,8 +30,6 @@ router.post("/login", (req, res) => {
 });
 
 router.post("/signup", (req, res) => {
-  console.log(req.body);
-
   const errors = Schema.user.validate(req.body);
   if (errors.length != 0) res.status(400).json(Response.fail(errors[0]));
   else {

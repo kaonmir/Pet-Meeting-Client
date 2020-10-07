@@ -3,7 +3,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { profile, profile_user } = require("../api/profile");
+const { profile } = require("../api/profile");
 const Response = require("../response");
 const session = require("../services/session");
 
@@ -12,7 +12,7 @@ router.get("/", (req, res) => {
 
   profile(id)
     .then((result) => res.json(Response.success(result)))
-    .catch((err) => console.log(err));
+    .catch((err) => res.json(Response.fail("Database Error")));
 });
 
 module.exports = router;

@@ -34,8 +34,6 @@ module.exports = {
 
       const sql = `UPDATE petmeeting.Worry SET ? WHERE WID='${wid}'`;
       MySQL.get().query(sql, option, (err, rows) => {
-        console.log(rows);
-        // 뭐가 튀어나올지 궁금하군.
         if (err) reject(err);
         else resolve(rows);
       });
@@ -65,7 +63,6 @@ module.exports = {
       const sql = `INSERT INTO petmeeting.BookMarkTo SET UID='${uid}', WID='${wid}'`;
 
       MySQL.get().query(sql, (err, rows) => {
-        console.log(rows);
         if (err) reject(err);
         else resolve(rows);
       });
@@ -76,7 +73,6 @@ module.exports = {
       const sql = `DELETE FROM petmeeting.BookMarkTo WHERE UID='${uid}' AND WID='${wid}'`;
 
       MySQL.get().query(sql, (err, rows) => {
-        console.log(rows);
         if (err) reject(err);
         else resolve(rows);
       });
