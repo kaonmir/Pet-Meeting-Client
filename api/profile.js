@@ -1,4 +1,5 @@
 const MySQL = require("./mysql");
+const chat = require("./chat");
 
 function profile_user(id) {
   return new Promise((resolve, reject) => {
@@ -19,33 +20,34 @@ function profile_pets(id) {
   });
 }
 
-// Give with chatID!!
-function profile_chats(id) {
+function profile_chats(uid) {
   return new Promise((resolve, reject) => {
-    const sql = `SELECT UID1, UID2 FROM ChatWith WHERE UID1="${id}" OR UID2="${id}"`;
-    MySQL.get().query(sql, (err, rows) => {
-      if (err) reject(err);
-      else {
-        var result = [];
-        var promises = [];
-
-        rows.forEach((row) => {
-          const uid = row.UID1 === id ? row.UID2 : row.UID1;
-          promises.push(profile_user(uid));
-
-          // 나중에 redis에서 가장 최근 대화를 뽑아서 넣는다!!
-          result.push({ Text: "blabla" });
-        });
-
-        Promise.all(promises).then((values) => {
-          for (var i = 0; i < values.length; i++) {
-            result[i].Name = values[i].Username;
-            result[i].ImgUrl = values[i].ImgUrl;
+    chat
+      .scan(uid)
+      .then((result) => {
+        const sql = `SELECT UID, Username, ImgUrl FROM petmeeting.User
+                  WHERE ${result.map((v) => ` UID='${v}' `).join(" OR ")}`;
+        MySQL.get().query(sql, (err, rows) => {
+          if (err) reject(err);
+          else {
+            var promises = rows.map((row) =>
+              chat.list(chat.getChatID(uid, row.UID), -1, -1)
+            );
+            Promise.all(promises)
+              .then((values) =>
+                values.map((v, idx) => {
+                  return {
+                    ...rows[idx],
+                    message: v[0].message,
+                  };
+                })
+              )
+              .then((result) => resolve(result))
+              .catch((err) => reject(err));
           }
-          resolve(result);
         });
-      }
-    });
+      })
+      .catch((err) => reject(err));
   });
 }
 
