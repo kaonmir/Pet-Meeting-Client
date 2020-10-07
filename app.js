@@ -1,46 +1,65 @@
+// Server and app
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
+const server = require("http").createServer(app);
+const io = require("socket.io")(server);
+
+// Services and Utilities
 const methodOverride = require("method-override");
 const cors = require("cors");
 const session = require("./services/session");
-const mysql = require("./api/mysql");
+const MySQL = require("./api/mysql");
+const Redis = require("./api/redis");
 
+// Routers
 const user = require("./routes/user");
 const profile = require("./routes/profile");
 const worry = require("./routes/worry");
 const showoff = require("./routes/showoff");
 const sample = require("./routes/sample");
+const chat = require("./routes/chat");
+const socket = require("./routes/socket");
 
-const { PORT, MySQLOption } = require("./config.json");
-const response = require("./response");
+// Options
+const { PORT, MySQLOption, RedisOption } = require("./config.json");
+const response = require("./services/response");
 
 /* -------------- Predefined -------------- */
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-mysql.createConnection(MySQLOption); // Connection to MySQL
+MySQL.createConnection(MySQLOption); // MySQL
+Redis.createClient(RedisOption.port, RedisOption.host); // Redis
 app.use(session.SessionOption); // Configuring session
 app.use(cors()); // Allowing CORS for developing
 app.use(methodOverride()); // For client doesn't support PUT and DELETE
 
-/* --------------- Routing --------------- */
+/* -------------- Function -------------- */
 
-app.use("/user", user);
-app.use("/sample", sample); // For Test
-
-// Check if logined
-app.all("*", (req, res, next) => {
+var checkLogined = (req, res, next) => {
   const id = session.getUID(req);
   if (id == undefined || id < 0) res.json(response.fail("Login please"));
   else next();
-});
+};
+
+/* --------------- Routing --------------- */
+
+app.use("/", express.static(__dirname + "/build")); // For Frontend
+app.use("/image", express.static(__dirname + "/images")); // For image
+app.use("/user", user);
+app.use("/sample", sample); // For Test
+
+app.all("*", checkLogined); // Check if logined
 
 app.use("/profile", profile);
 app.use("/worry", worry);
 app.use("/showoff", showoff);
+app.use("/chat", chat);
 
-// -------------- Listening -------------- */
+io.on("connection", socket); // Socket.io for chatting
 
-app.listen(PORT, console.log(`Server listening on port ${PORT}`));
+/* -------------- Listening -------------- */
+
+server.listen(PORT, console.log(`Server listening on port ${PORT}`));

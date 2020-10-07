@@ -1,4 +1,4 @@
-const Connection = require("./mysql");
+const MySQL = require("./mysql");
 
 module.exports = {
   list: (wid, limit, offset) =>
@@ -7,7 +7,7 @@ module.exports = {
                     LEFT JOIN petmeeting.User AS u ON c.UID=u.UID WHERE WID='${wid}' 
                     ${limit ? `LIMIT ${limit}  OFFSET ${offset}` : ""}`;
 
-      Connection.get().query(sql, (err, rows) => {
+      MySQL.get().query(sql, (err, rows) => {
         if (err) reject(err);
         else resolve(rows);
       });
@@ -23,7 +23,7 @@ module.exports = {
       };
       const sql = `INSERT INTO petmeeting.Comment SET ?`;
 
-      Connection.get().query(sql, option, (err, rows) => {
+      MySQL.get().query(sql, option, (err, rows) => {
         if (err) reject(err);
         else resolve(rows);
       });
@@ -39,7 +39,7 @@ module.exports = {
       };
       const sql = `INSERT INTO petmeeting.Comment SET ?`;
 
-      Connection.get().query(sql, option, (err, rows) => {
+      MySQL.get().query(sql, option, (err, rows) => {
         if (err) reject(err);
         else resolve(rows);
       });
@@ -50,7 +50,7 @@ module.exports = {
                   FROM petmeeting.Comment AS c
                   LEFT JOIN petmeeting.User AS u ON c.UID=u.UID WHERE CID='${cid}'`;
 
-      Connection.get().query(sql, (err, rows) => {
+      MySQL.get().query(sql, (err, rows) => {
         if (err) reject(err);
         else resolve(rows[0]);
       });
@@ -59,7 +59,7 @@ module.exports = {
     new Promise((resolve, reject) => {
       const sql = `UPDATE petmeeting.Comment SET Text='${text}' WHERE CID='${cid}'`;
 
-      Connection.get().query(sql, (err, rows) => {
+      MySQL.get().query(sql, (err, rows) => {
         if (err) reject(err);
         else resolve(rows); // true is true?
       });
@@ -70,7 +70,7 @@ module.exports = {
     new Promise((resolve, reject) => {
       const sql = `DELETE FROM petmeeting.Comment WHERE CID='${cid}'`;
 
-      Connection.get().query(sql, (err, rows) => {
+      MySQL.get().query(sql, (err, rows) => {
         if (err) reject(err);
         else resolve(rows); // true is true?
       });
