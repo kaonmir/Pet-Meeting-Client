@@ -3,6 +3,7 @@ const showoff = require("../api/showoff");
 const response = require("../services/response");
 const session = require("../services/session");
 const { formatTime } = require("../services/format");
+const multer = require("../api/multer");
 const router = express.Router();
 
 router.get("/list", (req, res) => {
@@ -33,12 +34,49 @@ router.get("/:sid", (req, res) => {
   else res.json(response.fail("SID is wrong"));
 });
 
-// Write, TODO!!!!
-router.post("/", (req, res) => {
-  res.json(response.fail("Not implemented yet"));
+// Write showoff post
+router.post("/", multer.single("img"), (req, res) => {
+  const uid = session.getUID();
+  const text = req.body.text;
+  const date = formatTime(new Date());
+  const file = req.file;
+
+  if (file == undefined) res.json(response.fail("There's no image!!"));
+  else if (text == undefined) res.json(response.fail("No Text!!"));
+  else {
+    multer
+      .upload(file)
+      .then((imgid) =>
+        showoff
+          .write(imgid, text, date, uid)
+          .then((result) =>
+            res.json(response.success({ SID: result.insertId }))
+          )
+          .catch((_err) => res.json(response.fail("Database Error")))
+      )
+      .catch((_err) => res.json(response.fail("Database Error")));
+  }
 });
-router.put("/:sid", (req, res) => {
-  res.json(response.fail("Not implemented yet"));
+
+router.put("/:sid", multer.single("img"), (req, res) => {
+  const sid = Number(req.params.sid);
+  const text = req.body.text;
+  const file = req.file;
+
+  if (text == undefined && file == undefined)
+    res.json(response.fail("Fill in the blank completely!!"));
+  else if (isNaN(sid) || sid <= 0) res.json(response.fail("SID is wrong"));
+  else {
+    multer
+      .upload(file)
+      .then((imgID) => {
+        showoff
+          .update(sid, imgID, text)
+          .then((result) => res.json(response.success()))
+          .catch((_err) => res.json(response.fail("Database Error")));
+      })
+      .catch((_err) => res.json(response.fail("Database Error")));
+  }
 });
 
 router.delete("/:sid", (req, res) => {

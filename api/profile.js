@@ -3,7 +3,7 @@ const chat = require("./chat");
 
 function profile_user(id) {
   return new Promise((resolve, reject) => {
-    const sql = `SELECT Username, ImgUrl FROM User WHERE UID="${id}"`;
+    const sql = `SELECT Username, ImgID FROM User WHERE UID="${id}"`;
     MySQL.get().query(sql, (err, rows) => {
       if (err) reject(err);
       else resolve(rows[0]); // 하나의 유저만 요청하는 거니까 rows[0]
@@ -12,7 +12,7 @@ function profile_user(id) {
 }
 function profile_pets(id) {
   return new Promise((resolve, reject) => {
-    const sql = `SELECT Name, Year, Gender, ImgUrl FROM Pet WHERE UID="${id}"`;
+    const sql = `SELECT Name, Year, Gender, ImgID FROM Pet WHERE UID="${id}"`;
     MySQL.get().query(sql, (err, rows) => {
       if (err) reject(err);
       else resolve(rows || []);
@@ -25,7 +25,7 @@ function profile_chats(uid) {
     chat
       .scan(uid)
       .then((result) => {
-        const sql = `SELECT UID, Username, ImgUrl FROM petmeeting.User
+        const sql = `SELECT UID, Username, ImgID FROM petmeeting.User
                   WHERE ${result.map((v) => ` UID='${v}' `).join(" OR ")}`;
         MySQL.get().query(sql, (err, rows) => {
           if (err) reject(err);
