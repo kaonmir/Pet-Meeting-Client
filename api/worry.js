@@ -9,7 +9,8 @@ module.exports = {
         if (err) reject(err);
         else resolve(rows);
       });
-    }), // Date: String
+    }),
+  // Date: String
   write: (title, text, date, uid) =>
     new Promise((resolve, reject) => {
       const option = {

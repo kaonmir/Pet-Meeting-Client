@@ -43,7 +43,7 @@ router.post("/", (req, res) => {
   const uid = session.getUID(req);
   const date = formatTime(new Date());
 
-  if (text == undefined || isNan(wid) || wid < 0)
+  if (text == undefined || isNaN(wid) || wid < 0)
     res.json(response.fail("Fill the blank completely"));
   else
     comment

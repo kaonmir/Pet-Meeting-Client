@@ -9,3 +9,4 @@ package-lock.json
 # Allow
 !/images/sample.jpg
 !/images/web
+!/images/sample
