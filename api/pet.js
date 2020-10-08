@@ -64,4 +64,21 @@ module.exports = {
         else resolve(rows);
       });
     }),
+
+  /* --------------------- Entrust ---------------------*/
+
+  entrust: (eid, pids) =>
+    Promise.all(
+      pids.map(
+        (pid) =>
+          new Promise((resolve, reject) => {
+            const sql = `UPDATE petmeeting.Pet SET EID='${eid}' WHERE PID='${pid}'`;
+
+            MySQL.get().query(sql, (err, rows) => {
+              if (err) reject(err);
+              else resolve(rows);
+            });
+          })
+      )
+    ),
 };
