@@ -58,8 +58,8 @@ router.post("/", multer.single("img"), (req, res) => {
   }
 });
 
-router.put("/:sid", (req, res) => {
-  const sid = Number(req.params.wid);
+router.put("/:sid", multer.single("img"), (req, res) => {
+  const sid = Number(req.params.sid);
   const text = req.body.text;
   const file = req.file;
 

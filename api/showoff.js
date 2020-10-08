@@ -53,9 +53,10 @@ module.exports = {
 
   update: (sid, imgID, text) =>
     new Promise((resolve, reject) => {
-      var option = {};
-      if (imgUrl) option.ImgUrl = imgUrl;
-      if (text) option.Text = text;
+      var option = {
+        ImgID: imgID,
+        Text: text,
+      };
 
       const sql = `UPDATE petmeeting.Showoff SET ? WHERE SID='${sid}'`;
       MySQL.get().query(sql, option, (err, rows) => {
