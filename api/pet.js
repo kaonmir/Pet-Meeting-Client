@@ -67,6 +67,7 @@ module.exports = {
 
   /* --------------------- Entrust ---------------------*/
 
+  // 아직 동작 확인 못함
   entrust: (eid, pids) =>
     Promise.all(
       pids.map(
