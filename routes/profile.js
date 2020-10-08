@@ -1,4 +1,3 @@
-// For sign in and up.
 // /profile
 const express = require("express");
 const router = express.Router();

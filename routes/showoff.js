@@ -46,9 +46,9 @@ router.post("/", multer.single("img"), (req, res) => {
   else {
     multer
       .upload(file)
-      .then((imgid) =>
+      .then((imgID) =>
         showoff
-          .write(imgid, text, date, uid)
+          .write(imgID, text, date, uid)
           .then((result) =>
             res.json(response.success({ SID: result.insertId }))
           )
@@ -58,6 +58,7 @@ router.post("/", multer.single("img"), (req, res) => {
   }
 });
 
+// toDO: Can improve performace to not upload image every time.
 router.put("/:sid", multer.single("img"), (req, res) => {
   const sid = Number(req.params.sid);
   const text = req.body.text;
@@ -67,15 +68,19 @@ router.put("/:sid", multer.single("img"), (req, res) => {
     res.json(response.fail("Fill in the blank completely!!"));
   else if (isNaN(sid) || sid <= 0) res.json(response.fail("SID is wrong"));
   else {
-    multer
-      .upload(file)
-      .then((imgID) => {
-        showoff
-          .update(sid, imgID, text)
-          .then((result) => res.json(response.success()))
+    showoff.get(sid).then((result) => {
+      if (result.UID != uid) res.json(response.fail("Authorizaion Error"));
+      else
+        multer
+          .upload(file)
+          .then((imgID) => {
+            showoff
+              .update(sid, imgID, text)
+              .then((result) => res.json(response.success()))
+              .catch((_err) => res.json(response.fail("Database Error")));
+          })
           .catch((_err) => res.json(response.fail("Database Error")));
-      })
-      .catch((_err) => res.json(response.fail("Database Error")));
+    });
   }
 });
 

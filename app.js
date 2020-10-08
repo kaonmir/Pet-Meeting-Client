@@ -20,6 +20,7 @@ const showoff = require("./routes/showoff");
 const sample = require("./routes/sample");
 const chat = require("./routes/chat");
 const socket = require("./routes/socket");
+const pet = require("./routes/pet");
 
 // Options
 const config = require("./config.json");
@@ -57,6 +58,7 @@ app.use("/profile", profile);
 app.use("/worry", worry);
 app.use("/showoff", showoff);
 app.use("/chat", chat);
+app.use("/pet", pet);
 
 io.on("connection", socket); // Socket.io for chatting
 
