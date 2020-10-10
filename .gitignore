@@ -1,4 +1,15 @@
+# Ignore
 config.json
 package-lock.json
 /node_modules
 /sessions
+/build
+/images/*
+
+# Allow
+!/images/web
+
+!/images/d1fc1eb1ffc5f81979854e1de6895da3
+!/images/fcf27442a9564a0b051aaad5904b8bd3
+!/images/3ed970196ccf11ded2de2c760f34cbe4
+!/images/03e16c347a8803f0ec39b0265778f90f

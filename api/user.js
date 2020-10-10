@@ -1,22 +1,31 @@
-const Connection = require("./mysql");
+const MySQL = require("./mysql");
 
 module.exports = {
   // TODO Crypto of password
   login: (username, password) =>
-    new Promise((reslove, reject) => {
+    new Promise((resolve, reject) => {
       const sql = `SELECT * FROM User WHERE username="${username}" AND password="${password}"`;
-      Connection.get().query(sql, (err, rows) => {
+      MySQL.get().query(sql, (err, rows) => {
         if (err) reject(err);
-        else if (rows[0]) reslove(rows[0].UID);
+        else if (rows[0]) resolve(rows[0].UID);
         else reject("Error: There's no user");
       });
     }),
   signup: (userData) =>
-    new Promise((reslove, reject) => {
-      const sql = `INSERT INTO User SET ?`;
-      Connection.get().query(sql, userData, (err, rows) => {
+    new Promise((resolve, reject) => {
+      const sql = `INSERT INTO petmeeting.User SET ?`;
+      MySQL.get().query(sql, userData, (err, rows) => {
         if (err) reject(err);
-        else reslove(rows.insertId);
+        else resolve(rows.insertId);
+      });
+    }),
+  exists: (uid) =>
+    new Promise((resolve, reject) => {
+      const sql = `SELECT * FROM petmeeting.User WHERE UID='${uid}'`;
+      MySQL.get().query(sql, (err, rows) => {
+        if (err) reject(err);
+        else if (rows.length == 1) resolve(true);
+        else resolve(false);
       });
     }),
 };
