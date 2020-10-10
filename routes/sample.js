@@ -32,17 +32,4 @@ router.post("/upload", multer.single("img"), (req, res) => {
   res.json(req.file);
 });
 
-router.post("/download", (req, res) => {
-  console.log(req.body);
-
-  const { filename, originalname } = req.body;
-  const fileStream = multer.download(filename);
-  res.setHeader("Content-Type", "binary/octet-stream");
-  res.setHeader(
-    "Content-Disposition",
-    "attachment;filename=" + encodeURI(originalname)
-  );
-  fileStream.pipe(res);
-});
-
 module.exports = router;

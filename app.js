@@ -20,8 +20,8 @@ const worry = require("./routes/worry");
 const showoff = require("./routes/showoff");
 const sample = require("./routes/sample");
 const chat = require("./routes/chat");
-const socket = require("./routes/socket");
 const pet = require("./routes/pet");
+const socket = require("./routes/socket");
 
 // Options
 const config = require("./config.json");
