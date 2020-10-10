@@ -1,4 +1,3 @@
-// {{BASE_URL}}/chat
 // 채팅 자동 업데이트는 나중에 (SideBar)
 // 정직하게 http loading 후 채팅 그림을 클릭하면 그때 socket 연결함.
 

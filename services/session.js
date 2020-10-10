@@ -1,13 +1,8 @@
-const session = require("express-session");
+// For debugging!!
 
 module.exports = {
   getUID: (req) => {
-    return 1;
-    // return req.session.uid;
+    // return 1;
+    return req.session.uid;
   },
-  SessionOption: session({
-    secret: "WhateverIwant",
-    resave: false,
-    saveUninitialized: true,
-  }),
 };

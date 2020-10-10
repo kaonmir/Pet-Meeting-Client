@@ -8,7 +8,8 @@ const io = require("socket.io")(server);
 const bodyParser = require("body-parser");
 const methodOverride = require("method-override");
 const cors = require("cors");
-const session = require("./services/session");
+const sess = require("./services/session");
+const session = require("express-session");
 const MySQL = require("./api/mysql");
 const Redis = require("./api/redis");
 
@@ -19,6 +20,7 @@ const worry = require("./routes/worry");
 const showoff = require("./routes/showoff");
 const sample = require("./routes/sample");
 const chat = require("./routes/chat");
+const pet = require("./routes/pet");
 const socket = require("./routes/socket");
 
 // Options
@@ -32,14 +34,14 @@ Redis.createClient(config.RedisOption.port, config.RedisOption.host); // Redis
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(session.SessionOption); // Configuring session
+app.use(session(config.SessionOption)); // Configuring session
 app.use(cors()); // Allowing CORS for developing
 app.use(methodOverride()); // For client doesn't support PUT and DELETE
 
 /* -------------- Function -------------- */
 
 var checkLogined = (req, res, next) => {
-  const id = session.getUID(req);
+  const id = sess.getUID(req);
   if (id == undefined || id < 0) res.json(response.fail("Login please"));
   else next();
 };
@@ -57,6 +59,7 @@ app.use("/profile", profile);
 app.use("/worry", worry);
 app.use("/showoff", showoff);
 app.use("/chat", chat);
+app.use("/pet", pet);
 
 io.on("connection", socket); // Socket.io for chatting
 
