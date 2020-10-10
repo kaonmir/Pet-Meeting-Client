@@ -12,7 +12,7 @@ function profile_user(id) {
 }
 function profile_pets(id) {
   return new Promise((resolve, reject) => {
-    const sql = `SELECT Name, Year, Gender, ImgID FROM Pet WHERE UID="${id}"`;
+    const sql = `SELECT Name, Year, Gender, Filename FROM PetView WHERE UID="${id}"`;
     MySQL.get().query(sql, (err, rows) => {
       if (err) reject(err);
       else resolve(rows || []);
