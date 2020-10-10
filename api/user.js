@@ -4,7 +4,7 @@ module.exports = {
   // TODO Crypto of password
   login: (username, password) =>
     new Promise((resolve, reject) => {
-      const sql = `SELECT * FROM User WHERE username="${username}" AND password="${password}"`;
+      const sql = `SELECT * FROM petmeeting.User WHERE username="${username}" AND password="${password}"`;
       MySQL.get().query(sql, (err, rows) => {
         if (err) reject(err);
         else if (rows[0]) resolve(rows[0].UID);

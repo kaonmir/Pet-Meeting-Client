@@ -12,7 +12,10 @@ router.get("/", (req, res) => {
 
   profile(id)
     .then((result) => res.json(response.success(result)))
-    .catch((err) => res.json(response.fail("Database Error")));
+    .catch((err) => {
+      console.log(err);
+      res.json(response.fail("Database Error"));
+    });
 });
 
 router.get("/download/:filename", (req, res) => {
