@@ -25,8 +25,12 @@ function profile_chats(uid) {
     chat
       .scan(uid)
       .then((result) => {
-        const sql = `SELECT UID, Username, Filename FROM petmeeting.UserView
-                  WHERE ${result.map((v) => ` UID='${v}' `).join(" OR ")}`;
+        var sql = `SELECT UID, Username, Filename FROM petmeeting.UserView`;
+        if (result.length != 0)
+          sql =
+            sql +
+            ` ${"WHERE" + result.map((v) => ` UID='${v}' `).join(" OR ")}`;
+
         MySQL.get().query(sql, (err, rows) => {
           if (err) reject(err);
           else {
@@ -36,10 +40,11 @@ function profile_chats(uid) {
             Promise.all(promises)
               .then((values) =>
                 values.map((v, idx) => {
-                  return {
-                    ...rows[idx],
-                    message: v[0].message,
-                  };
+                  if (v.length)
+                    return {
+                      ...rows[idx],
+                      message: v[0].message,
+                    };
                 })
               )
               .then((result) => resolve(result))
