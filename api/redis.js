@@ -1,7 +1,5 @@
 const redis = require("redis");
 class Redis {
-  static client;
-
   static createClient(port, host) {
     Redis.client = redis.createClient(port, host);
 
