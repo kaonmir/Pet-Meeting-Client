@@ -10,7 +10,7 @@ const { formatTime } = require("../services/format");
 router.get("/list/:uid", (req, res) => {
   const limit = req.query.limit || 5;
   const offset = req.query.offset || 0;
-  const uid1 = session.getUID();
+  const uid1 = session.getUID(req);
   const uid2 = Number(req.params.uid); // oponent's uid
 
   if (uid1 == uid2) res.json(response.fail("It's same UID!!"));
@@ -26,7 +26,7 @@ router.get("/list/:uid", (req, res) => {
 
 // Chatting하기
 router.post("/:uid", (req, res) => {
-  const uid1 = session.getUID();
+  const uid1 = session.getUID(req);
   const uid2 = Number(req.params.uid);
   const message = req.body.message;
 

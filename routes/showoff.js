@@ -36,7 +36,7 @@ router.get("/:sid", (req, res) => {
 
 // Write showoff post
 router.post("/", multer.single("img"), (req, res) => {
-  const uid = session.getUID();
+  const uid = session.getUID(req);
   const text = req.body.text;
   const date = formatTime(new Date());
   const file = req.file;
