@@ -27,7 +27,7 @@ router.get("/:pid", (req, res) => {
 
 // Write showoff post
 router.post("/", multer.single("img"), (req, res) => {
-  const uid = session.getUID();
+  const uid = session.getUID(req);
   const { name, genderID, description, breedID } = req.body;
   const year = Number(req.body.year);
   const file = req.file;
@@ -56,7 +56,7 @@ router.put("/:pid", multer.single("img"), (req, res) => {
   const pid = Number(req.params.pid);
   const year = Number(req.body.year);
   const { name, genderID, description, breedID } = req.body;
-  const uid = session.getUID();
+  const uid = session.getUID(req);
   const file = req.file;
 
   if (file == undefined) res.json(response.fail("There's no image!!"));
