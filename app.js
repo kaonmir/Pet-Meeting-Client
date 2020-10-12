@@ -8,24 +8,17 @@ const io = require("socket.io")(server);
 const bodyParser = require("body-parser");
 const methodOverride = require("method-override");
 const cors = require("cors");
-const sess = require("./services/session");
 const session = require("express-session");
 const MySQL = require("./api/mysql");
 const Redis = require("./api/redis");
+const multer = require("multer");
 
 // Routers
-const user = require("./routes/user");
-const profile = require("./routes/profile");
-const worry = require("./routes/worry");
-const showoff = require("./routes/showoff");
-const sample = require("./routes/sample");
-const chat = require("./routes/chat");
-const pet = require("./routes/pet");
+const index = require("./routes/index");
 const socket = require("./routes/socket");
 
 // Options
 const config = require("./config.json");
-const response = require("./services/response");
 
 /* -------------- Predefined -------------- */
 
@@ -38,29 +31,12 @@ app.use(session(config.SessionOption)); // Configuring session
 app.use(cors()); // Allowing CORS for developing
 app.use(methodOverride()); // For client doesn't support PUT and DELETE
 
-/* -------------- Function -------------- */
-
-var checkLogined = (req, res, next) => {
-  const id = sess.getUID(req);
-  if (id == undefined || id < 0) res.json(response.fail("Login please"));
-  else next();
-};
-
 /* --------------- Routing --------------- */
 
-app.use("/", express.static(__dirname + "/build")); // For Frontend
+// app.use("/", express.static(__dirname + "/build")); // For Frontend
 // app.use("/image", express.static(__dirname + "/images")); // For image
-app.use("/user", user);
-app.use("/sample", sample); // For Test
 
-app.all("*", checkLogined); // Check if logined
-
-app.use("/profile", profile);
-app.use("/worry", worry);
-app.use("/showoff", showoff);
-app.use("/chat", chat);
-app.use("/pet", pet);
-
+app.use("/", index);
 io.on("connection", socket); // Socket.io for chatting
 
 /* -------------- Listening -------------- */

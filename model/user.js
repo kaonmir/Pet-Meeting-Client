@@ -11,16 +11,14 @@ const user = new Schema({
     required: true,
     // TODO
   },
-  email: {
+  Email: {
     type: String,
     match: /^(\w+@\w+\.\D+|)$/,
   },
-  phone: {
+  Phone: {
     type: String,
     match: /^(\d{2,3}-\d{3,4}-\d{3,4}|\d{8,}|)$/,
   },
 });
 
-module.exports = {
-  user: user,
-};
+module.exports = user;
