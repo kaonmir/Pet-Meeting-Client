@@ -22,14 +22,14 @@ function query(sql, option) {
       MySQL.connection.query(sql, option, (err, rows) => {
         if (err) {
           console.log(err);
-          reject();
+          reject("Database Error");
         } else resolve(rows);
       });
     else
       MySQL.connection.query(sql, (err, rows) => {
         if (err) {
           console.log(err);
-          reject();
+          reject("Database Error");
         } else resolve(rows);
       });
   });
@@ -40,9 +40,18 @@ module.exports = {
   connection: MySQL.connection,
   query: query,
 
-  list: (table, limit, offset) =>
-    query(`SELECT * FROM ${schema}.${table} LIMIT ${limit} OFFSET ${offset}`),
-
+  list: (table, limit, offset, where) => {
+    if (!where)
+      return query(
+        `SELECT * FROM ${schema}.${table} LIMIT ${limit} OFFSET ${offset}`
+      );
+    else
+      return query(
+        `SELECT * FROM ${schema}.${table}  WHERE ${where
+          .map((v) => `${v.name}='${v.value}'`)
+          .join(" AND ")} LIMIT ${limit} OFFSET ${offset}`
+      );
+  },
   get: (table, id_name, id) =>
     query(`SELECT * FROM ${schema}.${table} WHERE ${id_name}='${id}'`).then(
       (rows) => {

@@ -1,6 +1,6 @@
 const Schema = require("validate");
 
-const user = new Schema({
+const schema = new Schema({
   username: {
     type: String,
     required: true,
@@ -11,14 +11,14 @@ const user = new Schema({
     required: true,
     // TODO
   },
-  Email: {
+  email: {
     type: String,
     match: /^(\w+@\w+\.\D+|)$/,
   },
-  Phone: {
+  phone: {
     type: String,
     match: /^(\d{2,3}-\d{3,4}-\d{3,4}|\d{8,}|)$/,
   },
 });
 
-module.exports = user;
+module.exports = schema;

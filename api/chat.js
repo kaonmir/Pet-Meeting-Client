@@ -4,12 +4,16 @@ const Redis = require("./redis");
 
 function lrange(chatID, property, limit, offset) {
   return new Promise((resolve, reject) =>
-    Redis.client.LRANGE(`${chatID}:${property}`, offset, limit, (err, reply) =>
-      err ? reject(err) : resolve(reply)
+    Redis.client.LRANGE(
+      `${chatID}:${property}`,
+      -1 - limit,
+      -1 - offset,
+      (err, reply) => (err ? reject(err) : resolve(reply))
     )
   );
 }
 function rpush(chatID, property, value) {
+  console.log("rpushing");
   return new Promise((resolve, reject) => {
     if (value == undefined) reject(`Undefinded value on ${chatID}:${property}`);
     // SET 처럼 같다고 사라지지 않기 때문에 resolve면 true다.

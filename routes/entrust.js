@@ -1,95 +1,118 @@
 const express = require("express");
 const router = express.Router();
-const Schema = require("../model/entrust");
-const entrust = require("../api/entrust.js");
 const response = require("../services/response");
 const session = require("../services/session");
 const { formatTime } = require("../services/format");
+const MySQL = require("../api/mysql");
+const model = require("../model/model");
+const { posix } = require("path");
+
+function prom(res, promise) {
+  promise
+    .then((result) => res.json(response.success(result)))
+    .catch((err) => res.status(400).json(response.fail(err)));
+}
+
+function posInt(num) {
+  num = Number(num);
+  if (!isNaN(num) && num > 0) return num;
+  else return 0;
+}
+
+/* ------------------- Pet choosing ---------------- */
+
+router.get("/pet", (req, res) => {
+  const limit = req.query.limit || 6;
+  const offset = req.query.offset || 0;
+  console.log("ads");
+  MySQL.query(
+    `SELECT * FROM petmeeting.PetView WHERE !isnull(EID)`
+  ).then((rows) => res.json(response.success(rows)));
+});
+
+/* ------------------- Entrusting  ---------------- */
 
 router.get("/list", (req, res) => {
   const limit = req.query.limit || 20;
   const offset = req.query.offset || 0;
 
-  entrust
-    .list(limit, offset)
-    .then((result) => res.json(response.success(result)))
-    .catch((err) => res.json(response.fail("Database Error")));
+  prom(entrust.list(limit, offset));
 });
 
 router.get("/:eid", (req, res) => {
   const eid = Number(req.params.eid);
+
   if (!isNaN(eid) && eid > 0)
-    entrust
-      .get(eid)
-      .then((result) => res.json(response.success(result)))
-      .catch((err) => res.json(response.fail("Database Error")));
+    MySQL.get("Entrust", "EID", eid)
+      .then((result) => {
+        MySQL.list("Housings", 100, 0, [{ name: "EID", value: eid }])
+          .then((array) => {
+            result.Housings = array.map((v) => v.HousingID);
+            res.json(response.success(result));
+          })
+          .catch((err) => {
+            console.log(err);
+            res.json(response.fail(err));
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+        res.json(response.fail(err));
+      });
   else res.json(response.fail("EID is wrong"));
 });
 
 // TODO!!
 // Pet에도 간섭해야 하고 Housing에도 간섭해야 한다.
 router.post("/", (req, res) => {
-  console.log(req.body);
-  const uid = session.getUID(req);
-  const { housingIDs } = req.body;
-  const errors = Schema.entrust.validate(req.body);
-  const {
-    text,
-    start_date,
-    end_date,
-    preypayment,
-    toypayment,
-    cityID,
-  } = req.body;
-  const created_date = formatTime(new Date());
+  const errors = model.entrust.validate(req.body);
+
+  const housingIDs = req.body.HousingIDs;
+  delete req.body.HousingIDs;
+
+  req.body.CreatedDate = formatTime(new Date());
+  req.body.UID = session.getUID(req);
 
   if (errors.length != 0) res.status(400).json(response.fail(errors[0]));
   else
-    entrust
-      .write(
-        text,
-        start_date,
-        end_date,
-        preypayment,
-        toypayment,
-        cityID,
-        created_date,
-        uid
-      )
-      .then((result) => {
-        const eid = result.insertId;
+    MySQL.write("Entrust", req.body)
+      .then((eid) => {
         Promise.all(
-          housingIDs.map((housingID) => entrust.addHousing(eid, housingID))
+          housingIDs.map((housingID) =>
+            MySQL.write("Housings", { EID: eid, HousingID: housingID })
+          )
         )
           .then(res.json(response.success({ PID: eid })))
-          .catch((_err) => res.json(response.fail("Database Error")));
+          .catch((err) => res.json(response.fail(err)));
       })
-      .catch((_err) => res.json(response.fail("Database Error")));
+      .catch((err) => res.json(response.fail(err)));
 });
 
-// 매번 image를 올리지 않게 해서 performance를 높이자!
-router.put("/:pid", (req, res) => {
-  const pid = Number(req.params.pid);
-  const year = Number(req.body.year);
-  const { name, genderID, description, breedID } = req.body;
-  const uid = session.getUID();
-  const file = req.file;
+router.put("/:eid", (req, res) => {
+  const errors = model.entrust.validate(req.body);
 
-  if (file == undefined) res.json(response.fail("There's no image!!"));
-  else if (isNaN(year) || year <= 0) res.json(response.fail("Year is wrong"));
-  else if (!name || !year || !genderID || !description || !breedID)
-    res.json(response.fail("Fill in the blank completely!!"));
-  else if (isNaN(pid) || pid <= 0) res.json(response.fail("PID is wrong"));
+  const housingIDs = req.body.HousingIDs;
+  delete req.body.HousingIDs;
+
+  const eid = posInt(req.params.eid);
+  if (eid == 0) res.json(response.fail("EID is wrong"));
   else {
-    entrust
-      .get(pid)
+    MySQL.get("entrust", "EID", eid)
       .then((result) => {
-        if (result.UID != uid) res.json(response.fail("Authorizaion Error"));
+        if (result.UID != session.getUID())
+          res.json(response.fail("Authorizaion Error"));
         else
-          entrust
-            .update(pid, name, year, genderID, description, breedID, imgID)
-            .then((result) => res.json(response.success()))
-            .catch((_err) => res.json(response.fail("Database Error")));
+          MySQL.update("entrust", req.body, "EID", eid).then(() => {
+            MySQL.delete("Housings", "EID", eid).then(() => {
+              Promise.all(
+                housingIDs.map((housingID) =>
+                  MySQL.write("Housings", { EID: eid, HousingID: housingID })
+                )
+              )
+                .then(res.json(response.success({ PID: eid })))
+                .catch((err) => res.json(response.fail(err)));
+            });
+          });
       })
       .catch((_err) => res.json(response.fail("Database Error")));
   }

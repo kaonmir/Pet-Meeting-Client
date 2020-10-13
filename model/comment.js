@@ -1,14 +1,14 @@
 const Schema = require("validate");
 
 const comment = new Schema({
-  Text: {
+  text: {
     type: String,
     required: true,
   },
-  CID_ReplyTo: {
+  cid_replyto: {
     type: Number,
   },
-  WID: {
+  wid: {
     type: Number,
     required: true,
   },

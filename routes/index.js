@@ -3,10 +3,11 @@ const router = express.Router();
 const MySQL = require("../api/mysql");
 
 const user = require("./user");
-const sample = require("./sample");
 const chat = require("./chat");
 const entrust = require("./entrust");
-const comment = require("./comment");
+const showoff = require("./showoff");
+
+const special = require("./special");
 
 const sess = require("../services/session");
 const response = require("../services/response");
@@ -19,8 +20,10 @@ function prom(res, promise) {
     promise
       .then((result) => res.json(response.success(result)))
       .catch((err) => {
-        if (err) res.status(400).json(response.fail(err));
-        else res.status(500).json(response.fail("Database Error"));
+        if (err) {
+          console.log(err);
+          res.status(400).json(response.fail(err));
+        } else res.status(500).json(response.fail("Database Error"));
       });
 }
 
@@ -36,7 +39,6 @@ function cap(json) {
 /* --------------- Routing --------------- */
 
 router.use("/user", user);
-router.use("/sample", sample); // For Test
 
 // Check if logined
 router.all("*", (req, res, next) => {
@@ -48,15 +50,18 @@ router.all("*", (req, res, next) => {
 
 router.all("/:table*", (req, _res, next) => {
   var { table } = req.params;
-  req.table = table.charAt(0).toUpperCase() + table.slice(1);
-  req.id_name = table[0] + "ID";
+  req.table = table[0].toUpperCase() + table.slice(1);
+  req.id_name = table[0].toUpperCase() + "ID";
   next();
 });
 
 // For exceptional routing
 router.use("/user", user);
 router.use("/chat", chat);
-router.use("/comment", comment);
+router.use("/entrust", entrust);
+router.use("/showoff", showoff);
+
+router.use("/", special);
 
 // LIST
 router.get("/:table/list", (req, res) => {
@@ -106,7 +111,6 @@ router.all("/:table/:id", multer.single("img"), (req, res, next) => {
 router.post("/:table", multer.single("img"), (req, res, next) => {
   const file = req.file;
   const errors = model[req.params.table].validate(req.body);
-
   req.body = cap(req.body);
 
   if (errors.length != 0) res.status(400).json(response.fail(errors[0]));
