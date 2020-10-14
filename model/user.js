@@ -1,6 +1,6 @@
 const Schema = require("validate");
 
-const user = new Schema({
+const schema = new Schema({
   username: {
     type: String,
     required: true,
@@ -21,6 +21,4 @@ const user = new Schema({
   },
 });
 
-module.exports = {
-  user: user,
-};
+module.exports = schema;

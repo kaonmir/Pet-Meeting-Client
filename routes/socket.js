@@ -10,16 +10,17 @@ const { formatTime } = require("../services/format");
 
 var clientSocket = {};
 
+// 보안 걱정
 module.exports = (socket) => {
   console.log("Connected!");
 
   socket.on("send_id", (data) => {
     const uid = data.uid;
-    if (clientSocket[uid] == undefined) {
-      clientSocket[uid] = socket;
-      socket.uid = uid;
-      console.log(`Connect with UID ${uid}`);
-    }
+    // 같은 아이디로 다른 데서 채팅하면
+    // 기존의 것은 사라진다...
+    clientSocket[uid] = socket;
+    socket.uid = uid;
+    console.log(`Connect with UID ${uid}`);
   });
 
   socket.on("disconnect", () => {
@@ -28,28 +29,29 @@ module.exports = (socket) => {
   });
 
   socket.on("chat", (data) => {
-    const uid1 = socket.uid;
+    const uid_s = socket.uid;
 
-    if (uid1 == undefined) {
+    if (uid_s == undefined) {
       socket.emit("message", { message: "Login First" });
       return;
     }
 
-    const uid2 = data.uid;
+    const uid_r = data.uid;
     const message = data.message;
+    data.writer = uid_s;
 
-    const chatID = chat.getChatID(uid1, uid2);
+    const chatID = chat.getChatID(uid_s, uid_r);
     const date = formatTime(new Date());
 
-    // ClientSocket[uid1]과 지금 socket이 동일한가
-
-    if (uid1 == uid2)
+    // ClientSocket[uid_s]과 지금 socket이 동일한가
+    if (uid_s == uid_r)
       socket.emit("message", { message: "Sender and Reciever is same!!" });
     else {
-      chat.chat(chatID, uid1, date, message);
-
-      data = { ...data, date: date, chatID: chatID };
-      clientSocket[Number(uid2)].emit("chat", JSON.stringify(data));
+      chat.chat(chatID, uid_s, date, message).then(() => {
+        data = { ...data, date: date, chatID: chatID };
+        receiver = clientSocket[Number(uid_r)];
+        if (receiver) receiver.emit("chat", JSON.stringify(data));
+      });
     }
   });
 };

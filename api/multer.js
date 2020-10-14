@@ -19,22 +19,18 @@ module.exports = {
       limit: { fileSize: 5 * 1024 * 1024 },
     }).single(fieldname),
 
-  //TODO!!
-  upload: (file) =>
-    new Promise((resolve, reject) => {
-      const { filename, mimetype, originalname, size } = file;
-      const option = {
-        Filename: filename,
-        MimeType: mimetype,
-        OriginalName: originalname,
-        Size: size,
-      };
-      const sql = `INSERT INTO petmeeting.Image SET ?`;
-      MySQL.get().query(sql, option, (err, rows) => {
-        if (err) reject(err);
-        else resolve(rows.insertId);
-      });
-    }),
+  upload: (file) => {
+    const { filename, mimetype, originalname, size } = file;
+    const option = {
+      Filename: filename,
+      MimeType: mimetype,
+      OriginalName: originalname,
+      Size: size,
+    };
+    const sql = `INSERT INTO petmeeting.Image SET ?`;
+
+    return MySQL.write("Image", option);
+  },
 
   // Return fs ReadStream
   download: (filename) => {
@@ -52,7 +48,7 @@ module.exports = {
       const filePath = "./images/" + filename;
       fs.unlink(filePath, () => {
         const sql = `DELETE FROM petmeeting.Image WHERE Filename='${filename}'`;
-        MySQL.get().query(sql, (err, rows) => {
+        MySQL.query(sql, (err, rows) => {
           if (err) reject(err);
           else resolve(true);
         });
