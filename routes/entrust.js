@@ -32,11 +32,27 @@ router.get("/pet", (req, res) => {
 
 /* ------------------- Entrusting  ---------------- */
 
+router.get("/info", (req, res) => {
+  const uid = session.getUID(req);
+
+  Promise.all([
+    MySQL.list("Housing", 100, 0),
+    MySQL.list("PetView", 100, 0, [{ name: "UID", value: uid }]),
+  ]).then((values) =>
+    res.json(
+      response.success({
+        Housings: values[0],
+        Pets: values[1],
+      })
+    )
+  );
+});
+
 router.get("/list", (req, res) => {
   const limit = req.query.limit || 20;
   const offset = req.query.offset || 0;
 
-  prom(entrust.list(limit, offset));
+  prom(res, entrust.list(limit, offset));
 });
 
 router.get("/:eid", (req, res) => {
