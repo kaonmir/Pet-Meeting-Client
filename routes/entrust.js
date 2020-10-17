@@ -101,6 +101,7 @@ router.post("/", (req, res) => {
   else
     MySQL.write("Entrust", req.body)
       .then((eid) => {
+
         var promise_housing = Promise.all(
           housingIDs.map((housingID) =>
             MySQL.write("Housings", { EID: eid, HousingID: housingID })
@@ -120,6 +121,7 @@ router.post("/", (req, res) => {
         console.log(err);
         res.json(response.fail("Database Error"));
       });
+
 });
 
 router.put("/:eid", (req, res) => {
@@ -145,6 +147,7 @@ router.put("/:eid", (req, res) => {
               )
                 .then(res.json(response.success({ PID: eid })))
                 .catch((err) => res.json(response.fail("Database Error")));
+
             });
           });
       })
