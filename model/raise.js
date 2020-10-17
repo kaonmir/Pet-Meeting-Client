@@ -1,7 +1,7 @@
 const Schema = require("validate");
 
 const schema = new Schema({
-  motivation: {
+  Motivation: {
     type: String,
     required: true,
   },
@@ -9,11 +9,11 @@ const schema = new Schema({
     type: Boolean,
     required: true,
   },
-  eid: {
+  Eid: {
     type: Number,
     required: true,
   },
-  cityID: {
+  CityID: {
     type: Number,
     required: true,
   },

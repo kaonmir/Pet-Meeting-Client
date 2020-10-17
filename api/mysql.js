@@ -79,9 +79,9 @@ module.exports = {
       option
     ).then((rows) => true),
 
-  updateAll: (table, options, id_name, id) => {
+  updateAll: (table, option, id_name, ids) => {
     Promise.all(
-      options.map((option) =>
+      ids.map((id) =>
         query(
           `UPDATE ${schema}.${table} SET ? WHERE ${id_name}='${id}'`,
           option

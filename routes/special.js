@@ -126,4 +126,17 @@ router.get("/download/:filename", (req, res) => {
   }
 });
 
+/* ----------- Upload Image ----------- */
+router.post("/upload", multer.single("img"), (req, res) => {
+  const file = req.file;
+
+  if (file == undefined) res.status(404).json("Error!!");
+  else {
+    multer
+      .upload(file)
+      .then((ImageID) => res.json(response.success(file)))
+      .catch((err) => res.status(400).json("Error!!"));
+  }
+});
+
 module.exports = router;

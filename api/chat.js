@@ -73,12 +73,24 @@ module.exports = {
         });
       return result;
     }),
+
   chat: (chatID, writer, date, message) =>
     Promise.all([
       rpush(chatID, "writers", writer),
       rpush(chatID, "dates", date),
       rpush(chatID, "messages", message),
     ]),
+
+  chatAll: (chatID, writer, date, messages) =>
+    Promise.all(
+      messages.map((message) =>
+        Promise.all([
+          rpush(chatID, "writers", writer),
+          rpush(chatID, "dates", date),
+          rpush(chatID, "messages", message),
+        ])
+      )
+    ),
 
   scan: (uid) =>
     new Promise((resolve, reject) => {
