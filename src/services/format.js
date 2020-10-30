@@ -1,5 +1,3 @@
-const session = require("./session");
-
 function formatDate(date) {
   var month = "" + (date.getMonth() + 1);
   var day = "" + date.getDate();
