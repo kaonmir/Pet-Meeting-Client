@@ -11,6 +11,11 @@ class ShowoffService {
   update = async (wid, DTO) => await this.worryModel.update(wid, DTO);
   delete = async (wid) => await this.worryModel.delete(wid);
 
+  // ---------------- Comments ------------------------ //
+
+  listcomment = async (wid, offset, limit) =>
+    await this.commentModel.list(wid, offset, limit);
+
   // ---------------- Bookmark ------------------------ //
 
   isBookmarked = async (uid, wid) =>

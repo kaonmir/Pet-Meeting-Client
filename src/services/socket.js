@@ -9,61 +9,58 @@ class SocketService {
 
   static clientSocket = {};
 
+  error(socket, message) {
+    socket.emit("message", { message });
+    return;
+  }
+
   connect(socket) {
     console.log("Connected!");
-
-    socket.on("login", () => {
-      const uid = socket.handshake.session.UID;
-      SocketService.clientSocket[uid] = socket;
-      socket.uid = uid;
-      console.log(`Connect with UID ${uid}`);
-    });
 
     socket.on("disconnect", () => {
       SocketService.clientSocket[socket.uid] = undefined;
       console.log(`Disconnected ${socket.uid}!`);
     });
 
-    socket.on("chat", async (data) => {
-      const senderId = socket.uid;
-      const receiverId = data.receiverId;
-      const message = data.message;
+    socket.on("login", () => {
+      const uid = socket.handshake.session.UID;
+      if (uid == undefined) return this.error(socket, "Login First!");
 
-      if (senderId == undefined)
-        return socket.emit("message", { message: "Login First" });
-      else if (receiverId == undefined || message == undefined)
-        return socket.emit("message", { message: "Parameter Error!" });
-      else if (senderId == receiverId)
-        return socket.emit("message", { message: "Sender Reciever are same" });
+      SocketService.clientSocket[uid] = socket;
+      socket.uid = uid;
+      console.log(`Connect with UID ${uid}`);
 
-      const chatID = await this.chatModel.getChatID(senderId, receiverId);
-      const date = formatTime(new Date());
+      socket.on("chat", async (data) => {
+        const senderId = socket.uid;
+        const { receiverId, message } = data;
 
-      const { error } = await this.chatModel.chat(
-        chatID,
-        senderId,
-        date,
-        message
-      );
+        if (receiverId == undefined || message == undefined)
+          return this.error(socket, "Parameter Error!");
+        else if (senderId == receiverId)
+          return this.error(socket, "Sender Reciever are same");
 
-      if (error) socket.emit("message", { message: error });
-      else {
-        // return for sender
-        socket.emit("chat", {
+        const chatID = await this.chatModel.getChatID(senderId, receiverId);
+        const date = formatTime(new Date());
+
+        // Store this chat to Redis server
+        const { error } = await this.chatModel.chat(
+          chatID,
           senderId,
-          receiverId,
-          message,
-        });
+          date,
+          message
+        );
 
-        // send chat for receiver
-        const receiverSocket = SocketService.clientSocket[receiverId];
-        if (receiverSocket)
-          receiverSocket.emit("chat", {
-            senderId,
-            receiverId,
-            message,
-          });
-      }
+        if (error) socket.emit("message", { message: error });
+        else {
+          // return for sender
+          socket.emit("chat", { senderId, receiverId, message });
+
+          // send chat for receiver
+          const receiverSocket = SocketService.clientSocket[receiverId];
+          if (receiverSocket)
+            receiverSocket.emit("chat", { senderId, receiverId, message });
+        }
+      });
     });
   }
   /**

@@ -11,34 +11,28 @@ const methodOverride = require("method-override");
 const cors = require("cors");
 const session = require("express-session");
 const multer = require("multer");
-const upload = multer();
 
 const mysql = require("mysql");
 const redis = require("redis");
-const { container } = require("./src/services/Container");
+const { container } = require("./src/services/Container"); // All services
 
-// Routers
-const index = require("./src/api/index");
-// const socket = require("./routes/socket"); //TODO
-
-// Options
-const config = require("./config.json");
+const index = require("./src/api/index"); // Routing
+const config = require("./config.json"); // Options
 
 /* -------------- Predefined - Databse -------------- */
+// MySQL
 const connection = mysql.createConnection(config.MySQLOption);
 connection.connect();
 
-const client = redis.createClient(
-  config.RedisOption.port,
-  config.RedisOption.host
-);
-client.echo("Redis Connecting Successfully", (err, reply) => {
-  if (err) console.log(err);
-  else console.log(reply);
-});
+// Reids
+const { port, host } = config.RedisOption;
+const client = redis.createClient(port, host);
+client.echo("Redis Connecting Successfully", (e, r) => console.log(e || r));
+
 container.init(connection, client);
 
 /* -------------- Predefined - Others -------------- */
+
 app.use(bodyParser.urlencoded({ extended: false })); // Parsing application/x-www-form-urlencoded
 app.use(bodyParser.json()); // Parsing application/json
 // app.use(upload.array()); // Parsing multipart/form-data
@@ -51,6 +45,7 @@ io.use(ios(sess, { autoSave: true })); // For Connecting session and socket.io
 
 /* -------------- Routing & Listening -------------- */
 
+// 보안에 취약 - 이미지 계속 보내기
 app.all("*", multer(config.MulterOption).single("img"), (req, res, next) => {
   req.container = container;
   next();
