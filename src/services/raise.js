@@ -16,7 +16,7 @@ class RaiseService {
     const { error: e1, result } = await this.raiseModel.create(DTO);
     if (e1) return { error: e1 };
 
-    const { error: e2, result: entrust } = await this.entrustModel.get(
+    const { error: e2, result: entrust } = await this.entrustModel.findById(
       raise.EID
     );
     if (e2) return { error: e2 };

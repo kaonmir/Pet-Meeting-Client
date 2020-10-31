@@ -31,7 +31,7 @@ class UserService {
 
       return await this.userModel.create(user);
     } else {
-      this.imageModel.removeFile(user.file.fieldname);
+      if (user.file) this.imageModel.removeFile(user.file.fieldname);
       return { error: "User already exists!" };
     }
   }
@@ -50,7 +50,6 @@ class UserService {
 
     var chats = [];
     for (var idx = 0; idx < userIds.length; idx++) {
-      console.log(idx);
       const { error, result } = await this.userModel.findById(userIds[idx]);
       chats.push(result);
     }

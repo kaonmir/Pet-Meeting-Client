@@ -9,7 +9,7 @@ router.get("/:rid", [param("rid").isString()], async (req, res, next) => {
   if (!validationResult(req).isEmpty())
     return next(new Error("Parameter Error"));
 
-  const rid = req.param.rid;
+  const rid = req.params.rid;
   const { error, result } = await req.container.raiseService.get(rid);
   if (error) next(new Error(error));
   else res.json({ result });

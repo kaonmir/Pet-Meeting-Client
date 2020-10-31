@@ -45,7 +45,7 @@ router.post(
     const { username, password } = req.body;
     const email = req.body.email || "";
     const phone = req.body.phone || "";
-    const { error, uid } = await req.container.userService.signup({
+    const { error, result } = await req.container.userService.signup({
       username,
       password,
       email,
@@ -54,7 +54,7 @@ router.post(
     });
 
     if (error) next(new Error(error));
-    else res.json({ uid });
+    else res.json({ uid: result });
   }
 );
 
@@ -74,7 +74,7 @@ router.get("/logout", (req, res, next) => {
 router.get("/profile", async (req, res, next) => {
   const uid = req.uid;
 
-  if (uid == undefined) next(new Error("Login First!!"));
+  if (uid == undefined) return next(new Error("Login First!!"));
   const { error, result } = await req.container.userService.profile(uid);
 
   if (error) next(new Error(error));

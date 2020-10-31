@@ -1,13 +1,14 @@
 const fs = require("fs");
 
 class EntrustService {
-  constructor(entrustModel, optionModel) {
+  constructor(entrustModel, optionModel, petModel) {
     this.entrustModel = entrustModel;
     this.optionModel = optionModel;
+    this.petModel = petModel;
   }
 
-  async listEntrustablePets(limit, offset) {
-    return await this.entrustModel.listEntrsutablePets(limit, offset);
+  async listEntrustablePets(offset, limit) {
+    return await this.entrustModel.listEntrustablePets(offset, limit);
   }
 
   async getInfo() {
@@ -31,18 +32,59 @@ class EntrustService {
     };
   }
 
-  async list(limit, offset) {
-    return await this.entrustModel.list(limit, offset);
+  async _getOptions(eid) {
+    const {
+      error: e1,
+      result: housings,
+    } = await this.entrustModel.listHousings(eid);
+    // 이름 고민 중..
+    const { error: e2, result: pets } = await this.petModel.listEntrusted(eid);
+
+    if (e1 || e2) return { error: e1 || e2 };
+    else return { housings, pets };
+  }
+
+  async list(offset, limit) {
+    const { error, result: entrusts } = await this.entrustModel.list(
+      offset,
+      limit
+    );
+    if (error) return { error };
+
+    const result = await entrusts.map(async (entrust) => {
+      // error 처리가 미흡하다.
+      const { housings, pets } = await this._getOptions(eid);
+      return { ...entrust, housings, pets };
+    });
+    return { result };
   }
 
   async get(eid) {
-    return await this.entrustModel.get(eid);
+    const { error: e1, result } = await this.entrustModel.findById(eid);
+    const { error: e2, housings, pets } = await this._getOptions(eid);
+    if (e1 || e2) return { error: e1 || e2 };
+
+    return { result: { ...result, housings, pets } };
   }
 
-  async create(DTO) {
-    return await this.entrustModel.create(DTO);
+  async create(DTO, housings, pets) {
+    const {
+      result: ishousingvalid,
+    } = await this.entrustModel.validHousingArray(housings);
+    const { result: ispetvalid } = await this.petModel.validArray(pets);
+    if (!ishousingvalid || !ispetvalid) return { error: "Invalid parameters" };
+
+    const { error, result } = await this.entrustModel.create(DTO);
+    if (error) return { error };
+
+    const { error: e2 } = this.entrustModel.createHousingsAll(result, housings);
+    const { error: e3 } = this.petModel.setEntrustAll(result, pets);
+
+    if (e2 || e3) return { error: e2 || e3 };
+    else return { result };
   }
 
+  // 귀찮아서 나중에...
   async update(eid, DTO) {
     return await this.entrustModel.update(eid, DTO);
   }

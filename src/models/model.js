@@ -10,9 +10,9 @@ class Model {
 
     await new Promise((resolve, reject) => {
       if (option)
-        this.conn.query(sql, option, (err, rows) => resolve(err, rows));
-      else this.conn.query(sql, (err, rows) => resolve(err, rows));
-    }).then((err, rows) => {
+        this.conn.query(sql, option, (err, rows) => resolve({ err, rows }));
+      else this.conn.query(sql, (err, rows) => resolve({ err, rows }));
+    }).then(({ err, rows }) => {
       error = err;
       result = rows;
     });
@@ -29,8 +29,9 @@ class Model {
   // ------------------------------------------------------------------
 
   async exist(id) {
-    const { error } = await this.findById(this.name, id);
-    if (error) return false;
+    const { error, result } = await this.findById(this.name, id);
+    console.log(id + " HMMMM " + result.PID);
+    if (error || result == undefined) return false;
     else return true;
   }
 
@@ -50,7 +51,7 @@ class Model {
     const { error, result } = await this.query(sql);
 
     if (error) return this.errorParser(error);
-    else if (result.length == 0) return { error: "No User!" };
+    else if (result.length == 0) return { error: "No Record!" };
     else return { result: result[0] };
   }
 

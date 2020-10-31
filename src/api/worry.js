@@ -10,7 +10,7 @@ router.get("/:wid", [param("wid").isString()], async (req, res, next) => {
   if (!validationResult(req).isEmpty())
     return next(new Error("Parameter Error"));
 
-  const wid = req.param.wid;
+  const wid = req.params.wid;
   const { error, result } = await req.container.worryService.get(wid);
   if (error) next(new Error(error));
   else res.json({ result });
@@ -78,7 +78,7 @@ router.delete("/:wid", [param("wid").isNumeric()], async (req, res, next) => {
 
   //  const uid = req.session;
   const uid = 1;
-  const wid = req.param.wid;
+  const wid = req.params.wid;
 
   const { error, result: worry } = await req.container.worryService.get(wid);
   if (error) next(new Error(error));
@@ -97,7 +97,7 @@ router.get("/:wid", [param("wid").isString()], async (req, res, next) => {
   if (!validationResult(req).isEmpty())
     return next(new Error("Parameter Error"));
 
-  const wid = req.param.wid;
+  const wid = req.params.wid;
   const { error, result } = await req.container.worryService.listComment(
     wid,
     offset,
@@ -112,7 +112,7 @@ router.get("/:cid", [param("cid").isString()], async (req, res, next) => {
   if (!validationResult(req).isEmpty())
     return next(new Error("Parameter Error"));
 
-  const cid = req.param.cid;
+  const cid = req.params.cid;
   const { error, result } = await req.container.worryService.getComment(cid);
   if (error) next(new Error(error));
   else res.json({ result });
@@ -182,7 +182,7 @@ router.delete("/:cid", [param("cid").isNumeric()], async (req, res, next) => {
 
   //  const uid = req.session;
   const uid = 1;
-  const cid = req.param.cid;
+  const cid = req.params.cid;
 
   const {
     error,

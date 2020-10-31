@@ -6,7 +6,7 @@ class User extends Model {
   }
 
   async findByUsernameAndPassword(username, password) {
-    const sql = `SELECT * FROM UserView WHERE username="${username}" AND password="${password}"`;
+    const sql = `SELECT * FROM User WHERE username="${username}" AND password="${password}"`;
     const { error, result } = await this.query(sql);
 
     if (error) return this.errorParser(error);

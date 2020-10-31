@@ -4,7 +4,7 @@ const router = express.Router();
 const { body, param, query, validationResult } = require("express-validator");
 const { formatTime } = require("../services/format");
 
-// GET /entrsut/pets
+// GET /entrust/pets
 router.get(
   "/pets",
   [
@@ -15,17 +15,17 @@ router.get(
     if (!validationResult(req).isEmpty())
       return next(new Error("Parameter Error"));
 
-    const { limit, offset } = req.query;
+    const { offset, limit } = req.query;
     const {
       error,
       result,
-    } = await req.container.entrustService.listEntrustablePets(limit, offset);
+    } = await req.container.entrustService.listEntrustablePets(offset, limit);
     if (error) next(new Error(error));
     else res.json({ result });
   }
 );
 
-// GET /entrsut/info
+// GET /entrust/info
 router.get("/info", async (req, res, next) => {
   const { error, result } = await req.container.entrustService.getInfo();
 
@@ -44,10 +44,10 @@ router.get(
     if (!validationResult(req).isEmpty())
       return next(new Error("Parameter Error"));
 
-    const { limit, offset } = req.query;
+    const { offset, limit } = req.query;
     const { error, result } = await req.container.entrustService.list(
-      limit,
-      offset
+      offset,
+      limit
     );
 
     if (error) next(new Error(error));
@@ -63,7 +63,7 @@ router.get(
     if (!validationResult(req).isEmpty())
       return next(new Error("Parameter Error"));
 
-    const eid = req.param.eid;
+    const eid = req.params.eid;
     const { error, result } = await req.container.entrustService.get(eid);
 
     if (error) next(new Error(error));
@@ -75,11 +75,13 @@ router.get(
 router.post(
   "/",
   [
-    body("text").isString(),
-    body("startDate").isDate(),
-    body("endDate").isDate(),
-    body("toypayment").isNumeric(),
-    body("cityId").isNumeric(),
+    body("text").isString().notEmpty(),
+    body("startDate").isDate().notEmpty(),
+    body("endDate").isDate().notEmpty(),
+    body("toyPayment").isNumeric().notEmpty(),
+    body("cityId").isNumeric().notEmpty(),
+    body("housings").isArray().notEmpty(),
+    body("pets").isArray().notEmpty(),
   ],
   async (req, res, next) => {
     if (!validationResult(req).isEmpty())
@@ -87,17 +89,22 @@ router.post(
 
     const uid = req.uid;
     const createdDate = formatTime(new Date());
-    const { text, startDate, endDate, toypayment, cityId } = req.body;
+    const { text, startDate, endDate, toyPayment } = req.body;
+    const { cityId, housings, pets } = req.body;
 
-    const { error, result } = await req.container.entrustService.create({
-      text,
-      startDate,
-      endDate,
-      toypayment,
-      cityId,
-      createdDate,
-      uid,
-    });
+    const { error, result } = await req.container.entrustService.create(
+      {
+        text,
+        startDate,
+        endDate,
+        toyPayment,
+        cityId,
+        createdDate,
+        uid,
+      },
+      housings,
+      pets
+    );
 
     if (error) next(new Error(error));
     else res.json({ result });
@@ -150,7 +157,7 @@ router.delete("/:eid", [param("eid").isNumeric()], async (req, res, next) => {
   if (!validationResult(req).isEmpty())
     return next(new Error("Parameter Error"));
 
-  const eid = req.param.eid;
+  const eid = req.params.eid;
 
   const { error: e1, result: entrust } = await req.container.entrustService.get(
     eid

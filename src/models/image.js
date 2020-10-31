@@ -6,7 +6,6 @@ class Image extends Model {
   }
 
   async create(file) {
-    console.log(file);
     const { filename, mimetype, originalname, size } = file;
     var file = { filename, mimetype, originalname, size };
     return super.create(file);
@@ -34,6 +33,7 @@ class Image extends Model {
 
   async removeFile(filename) {
     // TODO
+    return {};
   }
 }
 

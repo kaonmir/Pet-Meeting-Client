@@ -21,6 +21,10 @@ class ImageService {
       return { error: "There's no Image!!" };
     }
   }
+
+  async removeFile(filename) {
+    return await this.imageModel.removeFile(filename);
+  }
 }
 
 module.exports = ImageService;

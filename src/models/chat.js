@@ -3,7 +3,7 @@ class Chat {
     this.client = client;
   }
 
-  async lrange(chatID, property, limit, offset) {
+  async lrange(chatID, property, offset, limit) {
     var result, error;
     await new Promise((resolve, reject) =>
       this.client.LRANGE(
@@ -36,7 +36,7 @@ class Chat {
     return `${Math.min(uid1, uid2)}-${Math.max(uid1, uid2)}`;
   }
 
-  async list(chatID, limit, offset) {
+  async list(chatID, offset, limit) {
     const { error: e1, result: writers } = await lrange(
       chatID,
       "writers",
@@ -122,13 +122,5 @@ class Chat {
     else return { result: true };
   }
 }
-
-/*
-async list(offset, limit)
-async findById(name, id) 
-async create(DTO) 
-async update(name, id, DTO) 
-async delete(name, id) 
-*/
 
 module.exports = Chat;

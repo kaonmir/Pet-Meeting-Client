@@ -21,7 +21,7 @@ class ShowoffService {
   }
 
   async update(sid, DTO) {
-    const { error, result: showoff } = await this.showoffModel.get(sid);
+    const { error, result: showoff } = await this.showoffModel.findById(sid);
 
     if (error) return { error };
 
@@ -39,11 +39,15 @@ class ShowoffService {
 
   // ---------------- Vote ------------------------ //
 
-  isvoted = async (uid, sid) => await this.showoffModel.isvoted(uid, sid);
+  isvoted = async (uid, sid) => {
+    const { error } = await this.showoffModel.findById(sid);
+    if (error) return { error };
+    else return await this.showoffModel.isvoted(uid, sid);
+  };
 
   async vote(uid, sid) {
     const { error, result: isvoted } = await this.isvoted(uid, sid);
-    if (error) return next(new Error(error));
+    if (error) return { error };
 
     if (!isvoted) return await this.showoffModel.upvote(uid, sid);
     else return await this.showoffModel.downvote(uid, sid);

@@ -45,7 +45,11 @@ class Container {
     this.imageService = new ImageService(imageModel);
     this.showoffService = new ShowoffService(showoffModel, imageModel);
     this.worryService = new WorryService(worryModel);
-    this.entrustService = new EntrustService(entrustModel, optionModel);
+    this.entrustService = new EntrustService(
+      entrustModel,
+      optionModel,
+      petModel
+    );
     this.raiseService = new RaiseService(raiseModel, entrustModel, chatModel);
     this.socketService = new SocketService(chatModel);
   }
