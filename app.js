@@ -3,67 +3,56 @@ const express = require("express");
 const app = express();
 const server = require("http").createServer(app);
 const io = require("socket.io")(server);
+var ios = require("express-socket.io-session"); // Support to access session in socket
 
 // Services and Utilities
 const bodyParser = require("body-parser");
 const methodOverride = require("method-override");
 const cors = require("cors");
-const sess = require("./services/session");
 const session = require("express-session");
-const MySQL = require("./api/mysql");
-const Redis = require("./api/redis");
+const multer = require("multer");
 
-// Routers
-const user = require("./routes/user");
-const profile = require("./routes/profile");
-const worry = require("./routes/worry");
-const showoff = require("./routes/showoff");
-const sample = require("./routes/sample");
-const chat = require("./routes/chat");
-const pet = require("./routes/pet");
-const socket = require("./routes/socket");
+const mysql = require("mysql");
+const redis = require("redis");
+const { container } = require("./src/services/Container"); // All services
 
-// Options
-const config = require("./config.json");
-const response = require("./services/response");
+const index = require("./src/api/index"); // Routing
+const config = require("./config.json"); // Options
 
-/* -------------- Predefined -------------- */
+/* -------------- Predefined - Databse -------------- */
+// MySQL
+const connection = mysql.createConnection(config.MySQLOption);
+connection.connect();
 
-MySQL.createConnection(config.MySQLOption); // MySQL
-Redis.createClient(config.RedisOption.port, config.RedisOption.host); // Redis
+// Reids
+const { port, host } = config.RedisOption;
+const client = redis.createClient(port, host);
+client.echo("Redis Connecting Successfully", (e, r) => console.log(e || r));
 
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-app.use(session(config.SessionOption)); // Configuring session
+container.init(connection, client);
+
+/* -------------- Predefined - Others -------------- */
+
+app.use(bodyParser.urlencoded({ extended: false })); // Parsing application/x-www-form-urlencoded
+app.use(bodyParser.json()); // Parsing application/json
+// app.use(upload.array()); // Parsing multipart/form-data
 app.use(cors()); // Allowing CORS for developing
 app.use(methodOverride()); // For client doesn't support PUT and DELETE
 
-/* -------------- Function -------------- */
+const sess = session(config.SessionOption);
+app.use(sess); // Configuring session
+io.use(ios(sess, { autoSave: true })); // For Connecting session and socket.io
 
-var checkLogined = (req, res, next) => {
-  const id = sess.getUID(req);
-  if (id == undefined || id < 0) res.json(response.fail("Login please"));
-  else next();
-};
+/* -------------- Routing & Listening -------------- */
 
-/* --------------- Routing --------------- */
+// 보안에 취약 - 이미지 계속 보내기
+app.all("*", multer(config.MulterOption).single("img"), (req, res, next) => {
+  req.container = container;
+  next();
+});
 
-app.use("/", express.static(__dirname + "/build")); // For Frontend
-// app.use("/image", express.static(__dirname + "/images")); // For image
-app.use("/user", user);
-app.use("/sample", sample); // For Test
-
-app.all("*", checkLogined); // Check if logined
-
-app.use("/profile", profile);
-app.use("/worry", worry);
-app.use("/showoff", showoff);
-app.use("/chat", chat);
-app.use("/pet", pet);
-
-io.on("connection", socket); // Socket.io for chatting
-
-/* -------------- Listening -------------- */
+app.use("/", index);
+io.sockets.on("connection", container.socketService.connect);
 
 server.listen(
   config.PORT,
