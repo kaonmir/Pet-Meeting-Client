@@ -5,8 +5,8 @@ class Entrust extends Model {
     super("eid", "Entrust", conn);
   }
 
-  async listEntrustablePets(offset, limit) {
-    const sql = `SELECT * FROM PetView WHERE !isnull(EID) LIMIT ${limit} OFFSET ${offset}`;
+  async listEntrustablePets(uid, offset, limit) {
+    const sql = `SELECT * FROM PetView WHERE isnull(EID) AND UID != ${uid} LIMIT ${limit} OFFSET ${offset}`;
     return await super.query(sql);
   }
 
@@ -41,6 +41,17 @@ class Entrust extends Model {
 
     if (error) return { error };
     else return { result: true };
+  }
+
+  async updateHousingsAll(eid, housings) {
+    const { error: e1 } = await this.deleteHousingsAll(eid);
+    const { error: e2 } = await this.createHousingsAll(eid, housings);
+    return { error: e1 || e2 };
+  }
+
+  async deleteHousingsAll(eid) {
+    const sql = `DELETE FROM Housings WHERE EID=${eid}`;
+    return await this.query(sql);
   }
 }
 

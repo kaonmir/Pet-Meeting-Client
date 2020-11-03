@@ -31,15 +31,24 @@ class Pet extends Model {
     if (error) return { error };
     else return { result: true };
   }
-  async resetEntrustAll(pets) {
+  async resetEntrustAll(eid) {
+    const { error: e1, result: pets } = await this.list(0, 1000, "eid", eid);
+    if (e1) return { error: e1 };
+
     let error;
     await pets.forEach(async (pet) => {
-      const { error: e1 } = await this.update(pet, { eid: null });
-      if (e1) error = e1;
+      const { error: e2 } = await this.update(pet.PID, { eid: null }, true);
+      if (e2) error = e2;
     });
 
     if (error) return { error };
     else return { result: true };
+  }
+  async updateEntrustAll(eid, pets) {
+    const { error: e1 } = await this.resetEntrustAll(eid);
+    if (e1) return { error: e1 };
+
+    return await this.setEntrustAll(eid, pets);
   }
 }
 

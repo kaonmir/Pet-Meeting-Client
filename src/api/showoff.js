@@ -56,7 +56,8 @@ router.post(
   [body("text").isString().notEmpty()],
   async (req, res, next) => {
     if (!validationResult(req).isEmpty() || !req.file) {
-      if (req.file) req.container.imageService.removeFile(req.file.filename);
+      if (req.file)
+        await req.container.imageService.removeFile(req.file.filename);
       return next(new Error("Parameter Error"));
     }
     const text = req.body.text;
@@ -79,11 +80,15 @@ router.post(
 // PUT /showoff/:sid
 router.put(
   "/:sid",
-  [param("sid").isNumeric(), body("text").isString()],
+  [
+    param("sid").isNumeric(),
+    body("text").isString().optional({ checkFalsy: true }),
+  ],
   async (req, res, next) => {
     // 사진 없이도 수정 가능
     if (!validationResult(req).isEmpty()) {
-      if (req.file) req.container.imageService.removeFile(req.file.filename);
+      if (req.file)
+        await req.container.imageService.removeFile(req.file.filename);
       return next(new Error("Parameter Error"));
     }
 

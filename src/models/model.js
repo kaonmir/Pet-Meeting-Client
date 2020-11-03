@@ -5,13 +5,17 @@ class Model {
     this.conn = conn;
   }
 
-  async query(sql, option) {
+  async query(sql, option, nullable) {
     var error, result;
 
     await new Promise((resolve, reject) => {
-      if (option)
+      if (option) {
+        if (!nullable)
+          Object.keys(option).forEach((v) => {
+            if (!option[v]) delete option[v];
+          });
         this.conn.query(sql, option, (err, rows) => resolve({ err, rows }));
-      else this.conn.query(sql, (err, rows) => resolve({ err, rows }));
+      } else this.conn.query(sql, (err, rows) => resolve({ err, rows }));
     }).then(({ err, rows }) => {
       error = err;
       result = rows;
@@ -55,24 +59,24 @@ class Model {
     else return { result: result[0] };
   }
 
-  async create(DTO) {
+  async create(DTO, nullable) {
     const sql = `INSERT INTO ${this.table} SET ?`;
-    const { error, result } = await this.query(sql, DTO);
+    const { error, result } = await this.query(sql, DTO, nullable);
 
     if (error) return this.errorParser(error);
     else return { result: result.insertId };
   }
 
-  async update(id, DTO) {
+  async update(id, DTO, nullable) {
     const sql = `UPDATE ${this.table} SET ? WHERE ${this.name}='${id}'`;
-    const { error, result } = await this.query(sql, DTO);
+    const { error } = await this.query(sql, DTO, nullable);
     if (error) return this.errorParser(error);
     else return { result: true };
   }
 
   async delete(id) {
     const sql = `DELETE FROM ${this.table} WHERE ${this.name}='${id}'`;
-    const { error, result } = await this.query(sql);
+    const { error } = await this.query(sql);
 
     if (error) return this.errorParser(error);
     else return { result: true };

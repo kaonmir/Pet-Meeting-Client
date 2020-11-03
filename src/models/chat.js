@@ -37,19 +37,19 @@ class Chat {
   }
 
   async list(chatID, offset, limit) {
-    const { error: e1, result: writers } = await lrange(
+    const { error: e1, result: writers } = await this.lrange(
       chatID,
       "writers",
       limit,
       offset
     );
-    const { error: e2, result: messages } = await lrange(
+    const { error: e2, result: messages } = await this.lrange(
       chatID,
       "messages",
       limit,
       offset
     );
-    const { error: e3, result: dates } = await lrange(
+    const { error: e3, result: dates } = await this.lrange(
       chatID,
       "dates",
       limit,
@@ -114,9 +114,9 @@ class Chat {
   }
 
   async chat(chatID, writer, date, message) {
-    const { error: e1 } = await rpush(chatID, "writers", writer);
-    const { error: e2 } = await rpush(chatID, "dates", date);
-    const { error: e3 } = await rpush(chatID, "messages", message);
+    const { error: e1 } = await this.rpush(chatID, "writers", writer);
+    const { error: e2 } = await this.rpush(chatID, "dates", date);
+    const { error: e3 } = await this.rpush(chatID, "messages", message);
 
     if (e1 || e2 || e3) return { error: e1 || e2 || e3 };
     else return { result: true };

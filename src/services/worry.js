@@ -1,8 +1,9 @@
 const fs = require("fs");
 
 class ShowoffService {
-  constructor(worryModel) {
+  constructor(worryModel, commentModel) {
     this.worryModel = worryModel;
+    this.commentModel = commentModel;
   }
 
   list = async (offset, limit) => await this.worryModel.list(offset, limit);
@@ -13,8 +14,12 @@ class ShowoffService {
 
   // ---------------- Comments ------------------------ //
 
-  listcomment = async (wid, offset, limit) =>
+  listComment = async (wid, offset, limit) =>
     await this.commentModel.list(wid, offset, limit);
+  getComment = async (cid) => await this.commentModel.findById(cid);
+  createComment = async (DTO) => await this.commentModel.create(DTO);
+  updateComment = async (cid, DTO) => await this.commentModel.update(cid, DTO);
+  deleteComment = async (cid) => await this.commentModel.delete(cid);
 
   // ---------------- Bookmark ------------------------ //
 
@@ -22,7 +27,7 @@ class ShowoffService {
     await this.worryModel.isBookmarked(uid, wid);
 
   async bookmark(uid, wid) {
-    const { error, result: isBookmarked } = await this.isBookmarked(uid, sid);
+    const { error, result: isBookmarked } = await this.isBookmarked(uid, wid);
     if (error) return next(new Error(error));
 
     if (!isBookmarked) return await this.worryModel.bookmark(uid, wid);

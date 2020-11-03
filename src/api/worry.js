@@ -2,19 +2,45 @@ const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 
-const { body, param, validationResult } = require("express-validator");
+const { body, query, param, validationResult } = require("express-validator");
 const { formatTime } = require("../services/format");
 
-// GET /worry/:wid
-router.get("/:wid", [param("wid").isString()], async (req, res, next) => {
-  if (!validationResult(req).isEmpty())
-    return next(new Error("Parameter Error"));
+// GET /worry (List)
+router.get(
+  "/",
+  [
+    query("limit").isNumeric().notEmpty(),
+    query("offset").isNumeric().notEmpty(),
+  ],
+  async (req, res, next) => {
+    if (!validationResult(req).isEmpty())
+      return next(new Error("Parameter Error"));
 
-  const wid = req.params.wid;
-  const { error, result } = await req.container.worryService.get(wid);
-  if (error) next(new Error(error));
-  else res.json({ result });
-});
+    const { offset, limit } = req.query;
+    const { error, result } = await req.container.worryService.list(
+      offset,
+      limit
+    );
+
+    if (error) next(new Error(error));
+    else res.json({ result });
+  }
+);
+
+// GET /worry/:wid
+router.get(
+  "/:wid(\\d+)",
+  [param("wid").isNumeric().notEmpty()],
+  async (req, res, next) => {
+    if (!validationResult(req).isEmpty())
+      return next(new Error("Parameter Error"));
+
+    const wid = req.params.wid;
+    const { error, result } = await req.container.worryService.get(wid);
+    if (error) next(new Error(error));
+    else res.json({ result });
+  }
+);
 
 // POST /worry
 router.post(
@@ -45,15 +71,16 @@ router.put(
   "/:wid",
   [
     param("wid").isNumeric().notEmpty(),
-    body("title").isString().notEmpty(),
-    body("text").isString().notEmpty(),
+    body("title").isString().optional({ checkFalsy: true }),
+    body("text").isString().optional({ checkFalsy: true }),
   ],
   async (req, res, next) => {
     if (!validationResult(req).isEmpty())
       return next(new Error("Parameter Error"));
 
     const uid = req.uid;
-    const { text } = req.body;
+    const wid = req.params.wid;
+    const { title, text } = req.body;
     const date = formatTime(new Date());
 
     const { error, result: worry } = await req.container.worryService.get(wid);
@@ -84,7 +111,7 @@ router.delete("/:wid", [param("wid").isNumeric()], async (req, res, next) => {
   if (error) next(new Error(error));
   else if (worry.UID != uid) next(new Error("Authentication Error"));
   else {
-    const { error, result } = req.container.worryService.delete(wid);
+    const { error, result } = await req.container.worryService.delete(wid);
     if (error) next(new Error(error));
     else res.json({ result });
   }
@@ -93,30 +120,43 @@ router.delete("/:wid", [param("wid").isNumeric()], async (req, res, next) => {
 /* ------------------- Comments --------------------- */
 
 // GET /worry/comments/:wid (List)
-router.get("/:wid", [param("wid").isString()], async (req, res, next) => {
-  if (!validationResult(req).isEmpty())
-    return next(new Error("Parameter Error"));
+router.get(
+  "/comments/:wid",
+  [
+    param("wid").isString().notEmpty(),
+    query("limit").isNumeric().notEmpty(),
+    query("offset").isNumeric().notEmpty(),
+  ],
+  async (req, res, next) => {
+    if (!validationResult(req).isEmpty())
+      return next(new Error("Parameter Error"));
 
-  const wid = req.params.wid;
-  const { error, result } = await req.container.worryService.listComment(
-    wid,
-    offset,
-    limit
-  );
-  if (error) next(new Error(error));
-  else res.json({ result });
-});
+    const wid = req.params.wid;
+    const { offset, limit } = req.query;
+    const { error, result } = await req.container.worryService.listComment(
+      wid,
+      offset,
+      limit
+    );
+    if (error) next(new Error(error));
+    else res.json({ result });
+  }
+);
 
 // GET /worry/comment/:cid
-router.get("/:cid", [param("cid").isString()], async (req, res, next) => {
-  if (!validationResult(req).isEmpty())
-    return next(new Error("Parameter Error"));
+router.get(
+  "/comment/:cid",
+  [param("cid").isString()],
+  async (req, res, next) => {
+    if (!validationResult(req).isEmpty())
+      return next(new Error("Parameter Error"));
 
-  const cid = req.params.cid;
-  const { error, result } = await req.container.worryService.getComment(cid);
-  if (error) next(new Error(error));
-  else res.json({ result });
-});
+    const cid = req.params.cid;
+    const { error, result } = await req.container.worryService.getComment(cid);
+    if (error) next(new Error(error));
+    else res.json({ result });
+  }
+);
 
 // POST /worry/comment
 router.post(
@@ -143,7 +183,7 @@ router.post(
 
 // PUT /worry/comment/:cid
 router.put(
-  "/:cid",
+  "/comment/:cid",
   [param("cid").isNumeric().notEmpty(), body("text").isString().notEmpty()],
   async (req, res, next) => {
     if (!validationResult(req).isEmpty())
@@ -176,27 +216,33 @@ router.put(
 );
 
 // DELETE /worry/comment/:cid
-router.delete("/:cid", [param("cid").isNumeric()], async (req, res, next) => {
-  if (!validationResult(req).isEmpty())
-    return next(new Error("Parameter Error"));
+router.delete(
+  "/comment/:cid",
+  [param("cid").isNumeric()],
+  async (req, res, next) => {
+    if (!validationResult(req).isEmpty())
+      return next(new Error("Parameter Error"));
 
-  //  const uid = req.session;
-  const uid = 1;
-  const cid = req.params.cid;
+    //  const uid = req.session;
+    const uid = 1;
+    const cid = req.params.cid;
 
-  const {
-    error,
-    result: comment,
-  } = await req.container.worryService.getComment(cid);
+    const {
+      error,
+      result: comment,
+    } = await req.container.worryService.getComment(cid);
 
-  if (error) next(new Error(error));
-  else if (c.UID != uid) next(new Error("Authentication Error"));
-  else {
-    const { error, result } = req.container.worryService.deleteComment(cid);
     if (error) next(new Error(error));
-    else res.json({ result });
+    else if (comment.UID != uid) next(new Error("Authentication Error"));
+    else {
+      const { error, result } = await req.container.worryService.deleteComment(
+        cid
+      );
+      if (error) next(new Error(error));
+      else res.json({ result });
+    }
   }
-});
+);
 
 /* ------------------- Bookmark --------------------- */
 

@@ -7,8 +7,8 @@ class EntrustService {
     this.petModel = petModel;
   }
 
-  async listEntrustablePets(offset, limit) {
-    return await this.entrustModel.listEntrustablePets(offset, limit);
+  async listEntrustablePets(uid, offset, limit) {
+    return await this.entrustModel.listEntrustablePets(uid, offset, limit);
   }
 
   async getInfo() {
@@ -80,13 +80,21 @@ class EntrustService {
     const { error: e2 } = this.entrustModel.createHousingsAll(result, housings);
     const { error: e3 } = this.petModel.setEntrustAll(result, pets);
 
-    if (e2 || e3) return { error: e2 || e3 };
-    else return { result };
+    return { error: e2 || e3, result };
   }
 
-  // 귀찮아서 나중에...
-  async update(eid, DTO) {
-    return await this.entrustModel.update(eid, DTO);
+  async update(eid, DTO, housings, pets) {
+    const {
+      result: ishousingvalid,
+    } = await this.entrustModel.validHousingArray(housings);
+    const { result: ispetvalid } = await this.petModel.validArray(pets);
+    if (!ishousingvalid || !ispetvalid) return { error: "Invalid parameters" };
+
+    const { error: e1 } = await this.entrustModel.update(eid, DTO);
+    const { error: e2 } = this.entrustModel.updateHousingsAll(eid, housings);
+    const { error: e3 } = this.petModel.updateEntrustAll(eid, pets);
+
+    return { error: e1 || e2 || e3, result: true };
   }
 
   async delete(eid) {

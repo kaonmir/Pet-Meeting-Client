@@ -5,15 +5,19 @@ const { body, param, validationResult } = require("express-validator");
 const { formatTime } = require("../services/format");
 
 // GET /raise/:rid
-router.get("/:rid", [param("rid").isString()], async (req, res, next) => {
-  if (!validationResult(req).isEmpty())
-    return next(new Error("Parameter Error"));
+router.get(
+  "/:rid",
+  [param("rid").isString().notEmpty()],
+  async (req, res, next) => {
+    if (!validationResult(req).isEmpty())
+      return next(new Error("Parameter Error"));
 
-  const rid = req.params.rid;
-  const { error, result } = await req.container.raiseService.get(rid);
-  if (error) next(new Error(error));
-  else res.json({ result });
-});
+    const rid = req.params.rid;
+    const { error, result } = await req.container.raiseService.get(rid);
+    if (error) next(new Error(error));
+    else res.json({ result });
+  }
+);
 
 // POST /raise
 router.post(
@@ -54,11 +58,11 @@ router.post(
 router.put(
   "/:rid",
   [
-    param("rid").isNumeric(),
-    body("motivation").isString(),
-    body("carrierPeriod").isNumeric(),
-    body("housingId").isNumeric(),
-    body("cityId").isNumeric(),
+    param("rid").isNumeric().notEmpty(),
+    body("motivation").isString().optional({ checkFalsy: true }),
+    body("carrierPeriod").isNumeric().optional({ checkFalsy: true }),
+    body("housingId").isNumeric().optional({ checkFalsy: true }),
+    body("cityId").isNumeric().optional({ checkFalsy: true }),
   ],
   async (req, res, next) => {
     if (!validationResult(req).isEmpty())
