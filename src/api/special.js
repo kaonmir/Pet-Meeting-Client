@@ -2,25 +2,35 @@ const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 
-const { body, param, validationResult } = require("express-validator");
+const { body, query, param, validationResult } = require("express-validator");
 
-// GET /download/:imgId
+// GET /download/:filename
 router.get(
-  "/download/:imgId",
-  [param("imgId").isNumeric()],
+  "/download",
+  [
+    query("filename").isString().optional({ checkFalsy: true }),
+    query("imgid").isString().optional({ checkFalsy: true }),
+  ],
   async (req, res, next) => {
     if (!validationResult(req).isEmpty())
       return next(new Error("Parameter Error"));
 
-    const imgId = req.params.imgId;
-    const { error, result } = await req.container.imageService.download(imgId);
+    const { filename, imgid } = req.query;
+    if (!filename && !imgid) return next(new Error("Parameter Error"));
+
+    const { error, result } = filename
+      ? await req.container.imageService.downloadWithFilename(
+          filename,
+          "sample.jpg"
+        )
+      : await req.container.imageService.downloadWithId(imgid);
 
     if (error) next(new Error(error));
     else {
       res.setHeader("Content-Type", "binary/octet-stream");
       res.setHeader(
         "Content-Disposition",
-        "attachment;filename=" + encodeURI(result.originalName)
+        'attachment;filename="' + encodeURI(result.originalName) + '"'
       );
       result.fileStream.pipe(res);
     }

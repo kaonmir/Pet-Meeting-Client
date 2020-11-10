@@ -6,7 +6,7 @@ class Entrust extends Model {
   }
 
   async listEntrustablePets(uid, offset, limit) {
-    const sql = `SELECT * FROM PetView WHERE isnull(EID) AND UID != ${uid} LIMIT ${limit} OFFSET ${offset}`;
+    const sql = `SELECT * FROM PetView WHERE !isnull(EID) AND UID != ${uid} LIMIT ${limit} OFFSET ${offset}`;
     return await super.query(sql);
   }
 

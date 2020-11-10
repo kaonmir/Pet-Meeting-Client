@@ -5,21 +5,24 @@ class ImageService {
     this.imageModel = imageModel;
   }
 
-  async download(imgId) {
+  async downloadWithId(imgId) {
     const { error, result: img } = await this.imageModel.findById(imgId);
     if (error) return { error };
 
-    const filePath = "./images/" + img.Filename;
+    return await this.downloadWithFilename(img.Filename, img.OriginalName);
+  }
 
-    if (fs.existsSync(filePath)) {
-      var result = {
-        fileStream: fs.createReadStream(filePath),
-        originalName: img.OriginalName,
+  async downloadWithFilename(filename, originalName) {
+    const filePath = "./images/" + filename;
+
+    if (fs.existsSync(filePath))
+      return {
+        result: {
+          fileStream: fs.createReadStream(filePath),
+          originalName: originalName,
+        },
       };
-      return { result };
-    } else {
-      return { error: "There's no Image!!" };
-    }
+    else return { error: "There's no Image!!" };
   }
 
   async removeFile(filename) {

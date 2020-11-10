@@ -37,6 +37,12 @@ class ShowoffService {
     return await this.showoffModel.update(sid, DTO);
   }
 
+  async best() {
+    var date = new Date();
+    date.setMonth(date.getMonth() - 2);
+    return await this.showoffModel.best(date.toLocaleDateString());
+  }
+
   // ---------------- Vote ------------------------ //
 
   isvoted = async (uid, sid) => {

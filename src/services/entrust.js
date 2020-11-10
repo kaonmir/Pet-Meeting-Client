@@ -8,7 +8,21 @@ class EntrustService {
   }
 
   async listEntrustablePets(uid, offset, limit) {
-    return await this.entrustModel.listEntrustablePets(uid, offset, limit);
+    const { error, result: pets } = await this.entrustModel.listEntrustablePets(
+      uid,
+      offset,
+      limit
+    );
+    if (error) return { error };
+
+    var result = [];
+    for (var idx = 0; idx < pets.length; idx++) {
+      const pet = pets[idx];
+      const { result: Housing } = await this.optionModel.EIDHousing(pet.EID);
+      result.push({ ...pet, Housing });
+    }
+
+    return { result };
   }
 
   async getInfo() {
