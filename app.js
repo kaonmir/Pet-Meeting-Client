@@ -14,7 +14,7 @@ const multer = require("multer");
 
 const mysql = require("mysql");
 const redis = require("redis");
-const { container } = require("./src/services/Container"); // All services
+const { container } = require("./src/services/container"); // All services
 
 const index = require("./src/api/index"); // Routing
 const config = require("./config.json"); // Options
