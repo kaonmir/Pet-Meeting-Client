@@ -18,20 +18,17 @@ class Showoff extends Model {
   }
 
   // ---------------- Vote ------------------------ //
-  async isvoted(uid, sid) {
+  async get_vote(uid, sid) {
     const sql = `SELECT * FROM petmeeting.Vote WHERE UID=${uid} AND SID=${sid}`;
     const { error, result } = await this.query(sql);
-    return { error, result: result.length === 1 };
+    if (error) return { error };
+    else if (result.length == 0) return { error: "You didn't vote" };
+    else return { result: result[0].Score };
   }
-  async upvote(uid, sid) {
-    const sql = `INSERT INTO petmeeting.Vote SET UID=${uid}, SID=${sid}`;
-    const { error } = await this.query(sql);
+  async set_vote(uid, sid, score) {
+    const sql = `REPLACE INTO petmeeting.Vote SET ?`;
+    const { error } = await this.query(sql, { uid, sid, score });
     return { error, result: true };
-  }
-  async downvote(uid, sid) {
-    const sql = `DELETE FROM petmeeting.Vote WHERE UID=${uid} AND SID=${sid}`;
-    const { error } = await this.query(sql);
-    return { error, result: false };
   }
 }
 /*

@@ -139,26 +139,6 @@ router.delete("/:sid", [param("sid").isNumeric()], async (req, res, next) => {
 
 // ---------------- Vote ------------------------ //
 
-// GET /showoff/voted/:sid
-router.get(
-  "/voted/:sid",
-  [param("sid").isNumeric()],
-  async (req, res, next) => {
-    if (!validationResult(req).isEmpty())
-      return next(new Error("Parameter Error"));
-
-    const uid = req.uid;
-    const sid = req.params.sid;
-    const { error, result } = await req.container.showoffService.isvoted(
-      uid,
-      sid
-    );
-
-    if (error) return next(new Error(error));
-    else res.json({ result });
-  }
-);
-
 // GET /showoff/vote/:sid
 router.get("/vote/:sid", [param("sid").isNumeric()], async (req, res, next) => {
   if (!validationResult(req).isEmpty())
@@ -166,10 +146,35 @@ router.get("/vote/:sid", [param("sid").isNumeric()], async (req, res, next) => {
 
   const uid = req.uid;
   const sid = req.params.sid;
-  const { error, result } = await req.container.showoffService.vote(uid, sid);
+  const { error, result } = await req.container.showoffService.get_vote(
+    uid,
+    sid
+  );
 
   if (error) return next(new Error(error));
   else res.json({ result });
 });
+
+// GET /showoff/vote/:sid
+router.post(
+  "/vote/:sid",
+  [param("sid").isNumeric(), body("score").isInt()],
+  async (req, res, next) => {
+    if (!validationResult(req).isEmpty())
+      return next(new Error("Parameter Error"));
+
+    const uid = req.uid;
+    const { sid } = req.params;
+    const { score } = req.body;
+    const { error, result } = await req.container.showoffService.set_vote(
+      uid,
+      sid,
+      score
+    );
+
+    if (error) return next(new Error(error));
+    else res.json({ result });
+  }
+);
 
 module.exports = router;

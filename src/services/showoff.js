@@ -45,19 +45,17 @@ class ShowoffService {
 
   // ---------------- Vote ------------------------ //
 
-  isvoted = async (uid, sid) => {
+  get_vote = async (uid, sid) => {
     const { error } = await this.showoffModel.findById(sid);
     if (error) return { error };
-    else return await this.showoffModel.isvoted(uid, sid);
+    else return await this.showoffModel.get_vote(uid, sid);
   };
 
-  async vote(uid, sid) {
-    const { error, result: isvoted } = await this.isvoted(uid, sid);
+  set_vote = async (uid, sid, score) => {
+    const { error } = await this.showoffModel.findById(sid);
     if (error) return { error };
-
-    if (!isvoted) return await this.showoffModel.upvote(uid, sid);
-    else return await this.showoffModel.downvote(uid, sid);
-  }
+    return await this.showoffModel.set_vote(uid, sid, score);
+  };
 }
 
 module.exports = ShowoffService;
