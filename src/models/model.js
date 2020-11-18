@@ -4,7 +4,7 @@ class Model {
     this.table = table;
     this.conn = conn;
   }
-
+//query의 기능은 알 필요 없음 
   async query(sql, option, nullable) {
     var error, result;
 
