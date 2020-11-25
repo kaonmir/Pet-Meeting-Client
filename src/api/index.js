@@ -20,7 +20,7 @@ router.use("/user", user);
 
 // User logined
 router.all("*", (req, res, next) => {
-  if (req.uid) next();
+  if (req.session.uid) next();
   else next(new Error("Login First!!"));
 });
 
