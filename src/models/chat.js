@@ -59,12 +59,13 @@ class Chat {
     if (e1 || e2 || e3) return { error: e1 || e2 || e3 };
 
     var result = [];
-    for (var idx = 0; idx < writers[0].length; idx++)
+    for (var idx = 0; idx < writers.length; idx++)
       result.push({
         writer: writers[idx],
         message: messages[idx],
         date: dates[idx],
       });
+
     return { result };
   }
 

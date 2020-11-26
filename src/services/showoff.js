@@ -39,8 +39,10 @@ class ShowoffService {
 
   async best() {
     var date = new Date();
-    date.setMonth(date.getMonth() - 2);
-    return await this.showoffModel.best(date.toLocaleDateString());
+    date.setMonth(date.getMonth() - 4);
+    return await this.showoffModel.best(
+      `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
+    );
   }
 
   // ---------------- Vote ------------------------ //

@@ -35,14 +35,14 @@ class Container {
     const optionModel = new Option(connection);
     const commentModel = new Comment(connection);
 
-    const chatModel = new Chat(client);
+    this.chatModel = new Chat(client);
 
     // new All services
     this.userService = new UserService(
       userModel,
       imageModel,
       petModel,
-      chatModel
+      this.chatModel
     );
     this.imageService = new ImageService(imageModel);
     this.showoffService = new ShowoffService(showoffModel, imageModel);
@@ -52,8 +52,12 @@ class Container {
       optionModel,
       petModel
     );
-    this.raiseService = new RaiseService(raiseModel, entrustModel, chatModel);
-    this.socketService = new SocketService(chatModel);
+    this.raiseService = new RaiseService(
+      raiseModel,
+      entrustModel,
+      this.chatModel
+    );
+    this.socketService = new SocketService(this.chatModel);
   }
 }
 

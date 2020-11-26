@@ -6,7 +6,7 @@ class Showoff extends Model {
   }
 
   async best(thresholdDate) {
-    const sql = `SELECT * FROM petmeeting.ShowoffView
+    const sql = `SELECT * FROM petmeeting.ShowoffView s
                   WHERE Date > date_format("${thresholdDate}", "%Y-%m-%d")
                   ORDER BY Votes DESC
                   LIMIT 1`;

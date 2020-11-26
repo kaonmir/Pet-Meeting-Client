@@ -155,7 +155,7 @@ router.get("/vote/:sid", [param("sid").isNumeric()], async (req, res, next) => {
   else res.json({ result });
 });
 
-// GET /showoff/vote/:sid
+// POST /showoff/vote/:sid
 router.post(
   "/vote/:sid",
   [param("sid").isNumeric(), body("score").isInt()],

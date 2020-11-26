@@ -37,4 +37,26 @@ router.get(
   }
 );
 
+router.get("/chat/list/:uid", async (req, res) => {
+  const limit = req.query.limit || 5;
+  const offset = req.query.offset || 0;
+  const uid1 = req.uid;
+  const uid2 = Number(req.params.uid); // oponent's uid
+
+  if (uid1 == uid2) res.json(response.fail("It's same UID!!"));
+  else if (isNaN(uid2) || uid2 < 0) res.json(response.fail("UID is wrong"));
+  else {
+    const chatID = await req.container.chatModel.getChatID(uid1, uid2);
+    const { result, error } = await req.container.chatModel.list(
+      chatID,
+      limit,
+      offset
+    );
+
+    console.log(result);
+
+    if (error) next(Error(error));
+    else res.json({ result });
+  }
+});
 module.exports = router;
