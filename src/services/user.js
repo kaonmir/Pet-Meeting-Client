@@ -10,7 +10,7 @@ class UserService {
   async exist(uid) {
     return await this.userModel.exist("uid", uid);
   }
-
+//400 param error 추가 user쪽 
   // return {error, uid}
   async login(username, password) {
     return await this.userModel.findByUsernameAndPassword(username, password);

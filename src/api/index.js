@@ -11,8 +11,8 @@ const raise = require("./raise.js");
 
 // To control all session flow
 router.all("*", (req, res, next) => {
-  // req.uid = req.session.uid;
-  req.uid = 1;
+  req.uid = req.session.uid;
+  // req.uid = 1;
   next();
 });
 
@@ -20,7 +20,7 @@ router.use("/user", user);
 
 // User logined
 router.all("*", (req, res, next) => {
-  if (req.uid) next();
+  if (req.session.uid) next();
   else next(new Error("Login First!!"));
 });
 

@@ -9,9 +9,12 @@ class User extends Model {
     const sql = `SELECT * FROM User WHERE username="${username}" AND password="${password}"`;
     const { error, result } = await this.query(sql);
 
-    if (error) return this.errorParser(error);
-    else if (result.length == 0) return { error: "No User!" };
-    else return { uid: result[0].UID };
+    if (error) 
+      return this.errorParser(error);
+    else if (result.length == 0) 
+    return { error: "No User!" };
+    else return { 
+      uid: result[0].UID };
   }
 }
 

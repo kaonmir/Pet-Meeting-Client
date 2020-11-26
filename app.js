@@ -19,6 +19,8 @@ const { container } = require("./src/services/container"); // All services
 const index = require("./src/api/index"); // Routing
 const config = require("./config.json"); // Options
 
+import 'regenerator-runtime/runtime'
+
 /* -------------- Predefined - Databse -------------- */
 // MySQL
 const connection = mysql.createConnection(config.MySQLOption);
