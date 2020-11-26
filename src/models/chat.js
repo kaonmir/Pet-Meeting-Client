@@ -4,7 +4,7 @@ class Chat {
   }
 
   async lrange(chatID, property, offset, limit) {
-    var result, error;
+    let result, error;
     await new Promise((resolve, reject) =>
       this.client.LRANGE(
         `${chatID}:${property}`,
@@ -20,7 +20,8 @@ class Chat {
   }
 
   async rpush(chatID, property, value) {
-    var result, error;
+    var error;
+    var result;
     await new Promise((resolve, reject) => {
       this.client.RPUSH(`${chatID}:${property}`, value, (err, reply) =>
         err ? reject(err) : resolve()
