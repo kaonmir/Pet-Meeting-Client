@@ -20,11 +20,7 @@ router.get(
     const {
       error,
       result,
-    } = await req.container.entrustService.listEntrustablePets(
-      uid,
-      offset,
-      limit
-    );
+    } = await req.container.entrustService.listEntrustablePets(uid);
     if (error) next(new Error(error));
     else res.json({ result });
   }

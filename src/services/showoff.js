@@ -1,7 +1,6 @@
-const fs = require("fs");
-
 class ShowoffService {
-  constructor(showoffModel, imageModel) {
+  constructor(recommenderModel, showoffModel, imageModel) {
+    this.recommenderModel = recommenderModel;
     this.showoffModel = showoffModel;
     this.imageModel = imageModel;
   }
@@ -56,7 +55,10 @@ class ShowoffService {
   set_vote = async (uid, sid, score) => {
     const { error } = await this.showoffModel.findById(sid);
     if (error) return { error };
-    return await this.showoffModel.set_vote(uid, sid, score);
+    else {
+      this.recommenderModel.voteEvent();
+      return await this.showoffModel.set_vote(uid, sid, score);
+    }
   };
 }
 

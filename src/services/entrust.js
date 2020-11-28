@@ -1,19 +1,22 @@
 const fs = require("fs");
 
 class EntrustService {
-  constructor(entrustModel, optionModel, petModel) {
+  constructor(recommenderModel, entrustModel, optionModel, petModel) {
+    this.recommenderModel = recommenderModel;
     this.entrustModel = entrustModel;
     this.optionModel = optionModel;
     this.petModel = petModel;
   }
 
-  async listEntrustablePets(uid, offset, limit) {
-    const { error, result: pets } = await this.entrustModel.listEntrustablePets(
-      uid,
-      offset,
-      limit
+  async listEntrustablePets(uid) {
+    const { error: e1, result: pids } = await this.recommenderModel.listPets(
+      uid
     );
-    if (error) return { error };
+    const {
+      error: e2,
+      result: pets,
+    } = await this.entrustModel.listEntrustablePets(pids);
+    if (e1 || e2) return { error: e1 || e2 };
 
     var result = [];
     for (var idx = 0; idx < pets.length; idx++) {

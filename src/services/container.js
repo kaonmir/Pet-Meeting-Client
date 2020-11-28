@@ -9,6 +9,7 @@ const Worry = require("../models/worry");
 const Entrust = require("../models/entrust");
 const Raise = require("../models/raise");
 const Comment = require("../models/comment");
+const Recommender = require("../models/recommender");
 
 const ImageService = require("./image");
 const ShowoffService = require("./showoff");
@@ -34,6 +35,7 @@ class Container {
     const raiseModel = new Raise(connection);
     const optionModel = new Option(connection);
     const commentModel = new Comment(connection);
+    const recommenderModel = new Recommender();
 
     this.chatModel = new Chat(client);
 
@@ -45,9 +47,14 @@ class Container {
       this.chatModel
     );
     this.imageService = new ImageService(imageModel);
-    this.showoffService = new ShowoffService(showoffModel, imageModel);
+    this.showoffService = new ShowoffService(
+      recommenderModel,
+      showoffModel,
+      imageModel
+    );
     this.worryService = new WorryService(worryModel, commentModel);
     this.entrustService = new EntrustService(
+      recommenderModel,
       entrustModel,
       optionModel,
       petModel

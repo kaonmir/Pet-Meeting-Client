@@ -5,8 +5,13 @@ class Entrust extends Model {
     super("eid", "Entrust", conn);
   }
 
-  async listEntrustablePets(uid, offset, limit) {
-    const sql = `SELECT * FROM PetView WHERE !isnull(EID) AND UID != ${uid} LIMIT ${limit} OFFSET ${offset}`;
+  // pids를 가지고 pets를 만든다.
+  async listEntrustablePets(pids) {
+    if (pids.length == 0) return { result: [] };
+    // const sql = `SELECT * FROM PetView WHERE !isnull(EID) AND UID != ${uid} LIMIT ${limit} OFFSET ${offset}`;
+    const pid_option = pids.map((pid) => `PID = ${pid}`).join(" OR ");
+    const sql = `SELECT * FROM petmeeting.PetView WHERE ${pid_option};`;
+
     return await super.query(sql);
   }
 
