@@ -2,6 +2,8 @@ version: "2"
 services:
   redis-server:
     image: "redis"
+  python-server:
+    image: "thswpvm/pet-meeting-ml"
   node-app:
     build: .
     ports:
