@@ -2,9 +2,18 @@ version: "2"
 services:
   redis-server:
     image: "redis"
+
   python-server:
     image: "thswpvm/pet-meeting-ml"
-  node-app:
-    build: .
+
+  nginx-server:
+    image: "thswpvm/pet-meeting-server-nginx"
     ports:
       - "4000:4000"
+
+  node-app:
+    build: .
+    depends_on:
+      - redis-server
+      - python-server
+      - nginx-server
