@@ -12,6 +12,7 @@ class EntrustService {
     const { error: e1, result: pids } = await this.recommenderModel.listPets(
       uid
     );
+
     const {
       error: e2,
       result: pets,

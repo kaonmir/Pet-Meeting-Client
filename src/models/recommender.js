@@ -16,9 +16,13 @@ class Recommender {
     } catch (e) {
       error = e;
     }
-    const { result } = await res.json();
-
-    return { error, result };
+    try {
+      const { result } = await res.json();
+      return { error, result };
+    } catch (e) {
+      console.log(e);
+      return { e };
+    }
   }
 
   async voteEvent() {

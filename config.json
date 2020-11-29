@@ -8,11 +8,11 @@
   },
   "RedisOption": {
     "port": 6379,
-    "host": "redis-server"
+    "host": "127.0.0.1"
   },
   "RecommenderOption": {
     "port": 5000,
-    "host": "python-server"
+    "host": "127.0.0.1"
   },
   "SessionOption": {
     "secret": "WhateverIwant",

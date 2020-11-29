@@ -5,15 +5,20 @@ services:
 
   python-server:
     image: "thswpvm/pet-meeting-ml"
-
-  nginx-server:
-    image: "thswpvm/pet-meeting-server-nginx"
     ports:
-      - "4000:4000"
+      - 5000:5000
 
-  node-app:
-    build: .
+  server:
+    image: "thswpvm/pet-meeting-server"
     depends_on:
       - redis-server
       - python-server
-      - nginx-server
+    ports:
+      - 4000:4000
+
+  server:
+    image: "thswpvm/pet-meeting-client"
+    depends_on:
+      - server
+    ports:
+      - 3000:3000

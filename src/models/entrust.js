@@ -12,6 +12,8 @@ class Entrust extends Model {
     const pid_option = pids.map((pid) => `PID = ${pid}`).join(" OR ");
     const sql = `SELECT * FROM petmeeting.PetView WHERE ${pid_option};`;
 
+    console.log(sql);
+
     return await super.query(sql);
   }
 
