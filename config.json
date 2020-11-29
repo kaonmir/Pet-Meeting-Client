@@ -1,0 +1,29 @@
+{
+  "PORT": 4000,
+  "MySQLOption": {
+    "host": "petmeeting.cvsejgvxoucu.us-east-2.rds.amazonaws.com",
+    "user": "admin",
+    "password": "petmeeting123",
+    "database": "petmeeting"
+  },
+  "RedisOption": {
+    "port": "127.0.0.1",
+    "host": "redis"
+  },
+  "RecommenderOption": {
+    "port": 5000,
+    "host": "127.0.0.1"
+  },
+  "SessionOption": {
+    "secret": "WhateverIwant",
+    "resave": true,
+    "saveUninitialized": false,
+    "cookie": {
+      "maxAge": 60000
+    }
+  },
+  "MulterOption": {
+    "dest": "./images/",
+    "limits": { "fileSize": 5242880 }
+  }
+}
