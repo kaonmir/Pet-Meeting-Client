@@ -9,6 +9,7 @@ const Worry = require("../models/worry");
 const Entrust = require("../models/entrust");
 const Raise = require("../models/raise");
 const Comment = require("../models/comment");
+const BaseModel = require("../models/model");
 const Recommender = require("../models/recommender");
 
 const ImageService = require("./image");
@@ -26,8 +27,8 @@ class Container {
 
   init(connection, client) {
     // new All models
+    this.baseModel = new BaseModel("pid", "Pet", connection);
     const userModel = new User(connection);
-    const imageModel = new Image(connection);
     const petModel = new Pet(connection);
     const showoffModel = new Showoff(connection);
     const worryModel = new Worry(connection);
@@ -37,20 +38,21 @@ class Container {
     const commentModel = new Comment(connection);
     const recommenderModel = new Recommender();
 
+    this.imageModel = new Image(connection);
     this.chatModel = new Chat(client);
 
     // new All services
     this.userService = new UserService(
       userModel,
-      imageModel,
+      this.imageModel,
       petModel,
       this.chatModel
     );
-    this.imageService = new ImageService(imageModel);
+    this.imageService = new ImageService(this.imageModel);
     this.showoffService = new ShowoffService(
       recommenderModel,
       showoffModel,
-      imageModel
+      this.imageModel
     );
     this.worryService = new WorryService(worryModel, commentModel);
     this.entrustService = new EntrustService(

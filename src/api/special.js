@@ -59,4 +59,19 @@ router.get("/chat/list/:uid", async (req, res) => {
     else res.json({ result });
   }
 });
+
+router.post("/pet", async (req, res) => {
+  const { pid, name, gender, UID, breedID } = req.body;
+  const file = req.file;
+  const { result: imgId } = await req.container.imageModel.create(file);
+
+  const sql = `INSERT INTO \`petmeeting\`.\`Pet\` (\`PID\`, \`Name\`, \`Year\`, \`GenderID\`, \`GradeRatio\`, \`Description\`, \`ImgID\`, \`UID\`, \`BreedID\`) 
+  VALUES (${pid}, "${name}", '3', ${gender}, '4', 'adsf', ${imgId}, ${UID}, ${breedID})`;
+
+  const { error } = await req.container.baseModel.query(sql);
+  console.log(error);
+
+  res.end("");
+});
+
 module.exports = router;
